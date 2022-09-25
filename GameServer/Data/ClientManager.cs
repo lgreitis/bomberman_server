@@ -1,4 +1,4 @@
-﻿using Models.Game.Client;
+﻿using Models.Game;
 using Models.WebSocket;
 using Newtonsoft.Json;
 
@@ -26,59 +26,61 @@ namespace GameServer.Data
 
         public class ClientManagerInstance
         {
-            private List<Client> Clients { get; set; }
+            private List<Player> Players { get; set; }
+            private readonly static object _lock = new object();
 
             public ClientManagerInstance()
             {
-                this.Clients = new List<Client>();
+                this.Players = new List<Player>();
             }
 
-            public string? Authenticate(string username)
+            public void AddPlayer(Player player)
             {
-                if (this.Clients.Any(x => x.Username.ToLower() == username.ToLower()))
+                lock (_lock)
                 {
-                    return null;
-                }
-
-                var client = new Client
-                {
-                    Username = username,
-                    Token = Guid.NewGuid().ToString(),
-                };
-
-                this.Clients.Add(client);
-
-                return client.Token;
-            }
-
-            public string? GetUsername(string token)
-            {
-                var client = this.Clients.SingleOrDefault(x => x.Token == token);
-
-                if (client == null)
-                {
-                    return null;
-                }
-
-                return client.Username;
-            }
-
-            public string GetUserData()
-            {
-                var clients = this.Clients
-                    .Select(x => new PlayerInfo
+                    if (this.Players.Any(x => x.Username == player.Username
+                                              || x.Token == player.Token))
                     {
-                        Username = x.Username,
-                        PositionX = x.PositionX,
-                        PositionY = x.PositionY
-                    })
-                    .ToList();
+                        return;
+                    }
 
-                return JsonConvert.SerializeObject(new PlayerInfoResponse
+                    this.Players.Add(player);
+                }
+            }
+
+            public List<Player> GetPlayers()
+            {
+                var players = new List<Player>();
+
+                lock (_lock)
                 {
-                    Type = "PLAYERS",
-                    Players = clients
-                });
+                    players.AddRange(this.Players);
+                }
+
+                return players;
+            }
+
+            public void MovePlayer(string token, bool posX, bool negX, bool posY, bool negY)
+            {
+                lock (_lock)
+                {
+                    var player = this.Players.FirstOrDefault(x => x.Username == token);
+                    
+                    if (player == null)
+                    {
+                        return;
+                    }
+
+                    if (posX != negX && (posX || negX))
+                    {
+                        player.LocationX += posX ? 10 : -10;
+                    }
+
+                    if (posY != negY && (posY || negY))
+                    {
+                        player.LocationY += posY ? 10 : -10;
+                    }
+                }
             }
         }
     }
