@@ -18,43 +18,63 @@ namespace DataAccess.DataAccess
     {
         private readonly Context _context;
         private readonly DbSet<T> _table;
+        private readonly object _lock;
 
         public GenericDataAccess(Context context)
         {
             _context = context;
             _table = _context.Set<T>();
+            _lock = new object();
         }
 
         public IQueryable<T> GetQueryable()
         {
-            return _table.AsNoTracking().AsQueryable();
+            lock (_lock)
+            {
+                return _table.AsNoTracking().AsQueryable();
+            }
         }
 
         public IQueryable<T> GetQueryable(Expression<Func<T, bool>> whereCondition)
         {
-            return _table.AsNoTracking().AsQueryable().Where(whereCondition);
+            lock (_lock)
+            {
+                return _table.AsNoTracking().AsQueryable().Where(whereCondition);
+            }
         }
 
         public T? Get(Expression<Func<T, bool>> whereCondition)
         {
-            return GetQueryable(whereCondition).FirstOrDefault();
+            lock (_lock)
+            {
+                return GetQueryable(whereCondition).FirstOrDefault();
+            }
         }
 
         public List<T> GetAll(Expression<Func<T, bool>> whereCondition)
         {
-            return GetQueryable(whereCondition).ToList();
+            lock (_lock)
+            {
+                return GetQueryable(whereCondition).ToList();
+            }
         }
 
         public void Update(T entity)
         {
-            _context.Entry(entity).State = EntityState.Modified;
-            _context.SaveChanges();
+            lock (_lock)
+            {
+                _context.Entry(entity).State = EntityState.Modified;
+                _context.SaveChanges();
+            }
         }
 
         public void Add(T entity)
         {
-            _context.Entry(entity).State = EntityState.Added;
-            _context.SaveChanges();
+            lock (_lock)
+            {
+                _context.Entry(entity).State = EntityState.Added;
+                _context.SaveChanges();
+            }
         }
     }
 }

@@ -1,9 +1,7 @@
-﻿using Models.Game;
-
-namespace Models.WebSocket
+﻿namespace Models.WebSocket
 {
     public class GameUpdateResponse
     {
-        public List<Player> Players { get; set; } = new List<Player>();
+        public List<Behaviour.Game> Games { get; set; } = new List<Behaviour.Game>();
     }
 }

@@ -14,50 +14,60 @@ namespace GameServer.Behaviours
     {
         protected override void OnMessage(MessageEventArgs e)
         {
-            IUserService? _userService;
             using (var serviceScope = Resolver.GetScope())
             {
-                _userService = serviceScope.ServiceProvider.GetService<IUserService>();
+                var _userService = serviceScope.ServiceProvider.GetService<IUserService>();
+                ArgumentNullException.ThrowIfNull(_userService);
 
-                if (_userService == null)
+
+                var requestCommand = GetRequestCommand(e.Data);
+
+                if (!requestCommand.Success)
                 {
                     return;
                 }
-            }
 
-            var requestCommand = GetRequestCommand(e.Data);
-            if (!requestCommand.Success)
-            {
-                return;
-            }
-
-            switch(requestCommand.CommandId)
-            {
-                case WebSocketCommandId.JoinLobby:
+                try
+                {
+                    switch (requestCommand.CommandId)
                     {
-                        var requestData = GetRequestData<JoinLobbyRequest>(e.Data);
+                        case WebSocketCommandId.JoinLobby:
+                            {
+                                var requestData = GetRequestData<JoinLobbyRequest>(e.Data);
 
-                        if (requestData == null)
-                        {
-                            break;
-                        }
+                                // TODO: Does lobby exists?
 
-                        if (string.IsNullOrEmpty(requestData.Token) || string.IsNullOrEmpty(requestData.LobbyId))
-                        {
-                            break;
-                        }
+                                var userId = _userService
+                                    .GetQueryable(x => x.LoginToken == requestData.Token)
+                                    .Select(x => x.UserId)
+                                    .SingleOrDefault();
 
-                        var player = ClientManager.Instance.GetPlayer(requestData.Token);
+                                if (userId <= 0)
+                                {
+                                    break;
+                                }
 
-                        if (player == null)
-                        {
-                            break;
-                        }
-                        
-                        // todo assign player to a lobby
+                                LobbyManager.Instance.AddPlayerToLobby(requestData.LobbyId, userId);
 
-                        break;
+                                if (LobbyManager.Instance.CanStartGame(requestData.LobbyId))
+                                {
+                                    Broadcast(new WebSocketResponse
+                                    {
+                                        ResponseId = WebSocketResponseId.StartGame,
+                                        Data = new StartGameResponse
+                                        {
+                                            LobbyId = requestData.LobbyId
+                                        }
+                                    });
+                                }
+
+                                break;
+                            }
                     }
+                }
+                catch
+                {
+                }
             }
         }
 
@@ -86,33 +96,32 @@ namespace GameServer.Behaviours
                 {
                     return (true, deserializedRequest.CommandId.ToUpper());
                 }
+
+                return (false, null);
             }
             catch
             {
+                return (false, null);
             }
-
-            return (false, null);
         }
 
-        private T? GetRequestData<T>(string request) where T : class
+        private T GetRequestData<T>(string request) where T : class, IRequestValidation
         {
-            try
-            {
-                var deserializedRequest = JsonConvert.DeserializeObject<WebSocketRequest>(request);
+            var deserializedRequest = JsonConvert.DeserializeObject<WebSocketRequest>(request);
 
-                if (deserializedRequest == null)
-                {
-                    return null;
-                }
-
-                // TODO: Use AutoMapper
-                return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(deserializedRequest.Data));
-            }
-            catch
+            if (deserializedRequest == null)
             {
+                throw new Exception("Could not deserialize request model.");
             }
 
-            return null;
+            var requestData = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(deserializedRequest.Data));
+
+            if (requestData == null || !requestData.IsModelValid())
+            {
+                throw new Exception("Request model is not valid.");
+            }
+
+            return requestData;
         }
     }
 }

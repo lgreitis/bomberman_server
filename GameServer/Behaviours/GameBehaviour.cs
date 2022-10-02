@@ -3,6 +3,8 @@ using Models.WebSocket;
 using Models.WebSocket.Request;
 using Models.WebSocket.Response;
 using Newtonsoft.Json;
+using Services.Services;
+using Services;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
@@ -12,50 +14,60 @@ namespace GameServer.Behaviours
     {
         protected override void OnMessage(MessageEventArgs e)
         {
-            var requestCommand = GetRequestCommand(e.Data);
-
-            if (!requestCommand.Success)
+            using (var serviceScope = Resolver.GetScope())
             {
-                return;
-            }
+                var _userService = serviceScope.ServiceProvider.GetService<IUserService>();
+                ArgumentNullException.ThrowIfNull(_userService);
 
-            switch (requestCommand.CommandId)
-            {
-                case WebSocketCommandId.Connect:
+                var requestCommand = GetRequestCommand(e.Data);
+
+                if (!requestCommand.Success)
+                {
+                    return;
+                }
+
+                try
+                {
+                    switch (requestCommand.CommandId)
                     {
-                        var requestData = GetRequestData<ConnectRequest>(e.Data);
+                        case WebSocketCommandId.Connect:
+                            {
+                                var requestData = GetRequestData<ConnectRequest>(e.Data);
 
-                        if (requestData == null)
-                        {
-                            break;
-                        }
+                                GameManager.Instance.InitializeGame(requestData.LobbyId);
 
-                        ClientManager.Instance.AddPlayer(new Models.Game.Player
-                        {
-                            Username = requestData.Token,
-                            Token = requestData.Token
-                        });
+                                var user = _userService
+                                    .GetQueryable(x => x.LoginToken == requestData.Token)
+                                    .Select(x => new
+                                    {
+                                        x.UserId,
+                                        x.Username,
+                                        x.LoginToken
+                                    })
+                                    .Single();
 
-                        break;
+                                GameManager.Instance.RegisterPlayer(requestData.LobbyId, user.UserId, user.LoginToken, user.Username);
+
+                                break;
+                            }
+                        case WebSocketCommandId.Move:
+                            {
+                                var requestData = GetRequestData<MoveRequest>(e.Data);
+
+                                GameManager.Instance.MovePlayer(
+                                    requestData.Token,
+                                    requestData.PositiveX,
+                                    requestData.NegativeX,
+                                    requestData.PositiveY,
+                                    requestData.NegativeY);
+
+                                break;
+                            }
                     }
-                case WebSocketCommandId.Move:
-                    {
-                        var requestData = GetRequestData<MoveRequest>(e.Data);
-
-                        if (requestData == null)
-                        {
-                            break;
-                        }
-
-                        ClientManager.Instance.MovePlayer(
-                            requestData.Token,
-                            requestData.PositiveX,
-                            requestData.NegativeX,
-                            requestData.PositiveY,
-                            requestData.NegativeY);
-
-                        break;
-                    }
+                }
+                catch
+                {
+                }
             }
 
             Broadcast(new WebSocketResponse
@@ -63,7 +75,7 @@ namespace GameServer.Behaviours
                 ResponseId = WebSocketResponseId.GameUpdate,
                 Data = new GameUpdateResponse
                 {
-                    Players = ClientManager.Instance.GetPlayers()
+                    Games = GameManager.Instance.GetGamesData()
                 }
             });
         }
@@ -93,33 +105,32 @@ namespace GameServer.Behaviours
                 {
                     return (true, deserializedRequest.CommandId.ToUpper());
                 }
+
+                return (false, null);
             }
             catch
             {
+                return (false, null);
             }
-
-            return (false, null);
         }
 
-        private T? GetRequestData<T>(string request) where T: class
+        private T GetRequestData<T>(string request) where T : class, IRequestValidation
         {
-            try
-            {
-                var deserializedRequest = JsonConvert.DeserializeObject<WebSocketRequest>(request);
+            var deserializedRequest = JsonConvert.DeserializeObject<WebSocketRequest>(request);
 
-                if (deserializedRequest == null)
-                {
-                    return null;
-                }
-
-                // TODO: Use AutoMapper
-                return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(deserializedRequest.Data));
-            }
-            catch
+            if (deserializedRequest == null)
             {
+                throw new Exception("Could not deserialize request model.");
             }
 
-            return null;
+            var requestData = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(deserializedRequest.Data));
+
+            if (requestData == null || !requestData.IsModelValid())
+            {
+                throw new Exception("Request model is not valid.");
+            }
+
+            return requestData;
         }
     }
 }

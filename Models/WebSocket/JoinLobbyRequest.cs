@@ -1,8 +1,16 @@
-﻿namespace Models.WebSocket
+﻿using Models.WebSocket.Request;
+
+namespace Models.WebSocket
 {
-    public class JoinLobbyRequest
+    public class JoinLobbyRequest : IRequestValidation
     {
-        public string LobbyId { get; set; } = string.Empty;
+        public int LobbyId { get; set; }
         public string Token { get; set; } = string.Empty;
+
+        public bool IsModelValid()
+        {
+            return !string.IsNullOrWhiteSpace(Token)
+                   && LobbyId > 0;
+        }
     }
 }
