@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Services.Services;
+using Services.Services.Lobby;
 
 namespace Services
 {
@@ -24,10 +25,13 @@ namespace Services
             // =================== DataAccess ===================
             services.AddScoped(typeof(IGenericDataAccess<>), typeof(GenericDataAccess<>));
             services.AddScoped(typeof(IUserDataAccess), typeof(UserDataAccess));
+            services.AddScoped(typeof(ILobbyDataAccess), typeof(LobbyDataAccess));
+            services.AddScoped(typeof(ILobbyUserDataAccess), typeof(LobbyUserDataAccess));
 
             // =================== Services ===================
             services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
             services.AddScoped(typeof(IUserService), typeof(UserService));
+            services.AddScoped(typeof(ILobbyService), typeof(LobbyService));
         }
     }
 }

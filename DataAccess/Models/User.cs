@@ -6,6 +6,11 @@ namespace DataAccess.Models
     [Table("User")]
     public class UserEntity : Entity
     {
+        public UserEntity() 
+        { 
+            LobbyUsers = new HashSet<LobbyUserEntity>(); 
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
@@ -13,5 +18,6 @@ namespace DataAccess.Models
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string? LoginToken { get; set; }
+        public ICollection<LobbyUserEntity> LobbyUsers { get; set; }
     }
 }
