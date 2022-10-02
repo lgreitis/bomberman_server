@@ -26,6 +26,7 @@ namespace GameServer.Data
 
         public class ClientManagerInstance
         {
+            
             private List<Player> Players { get; set; }
             private readonly static object _lock = new object();
 
@@ -58,6 +59,11 @@ namespace GameServer.Data
                 }
 
                 return players;
+            }
+
+            public Player GetPlayer(string token)
+            {
+                return this.Players.Where(x => x.Token == token).First();
             }
 
             public void MovePlayer(string token, bool posX, bool negX, bool posY, bool negY)

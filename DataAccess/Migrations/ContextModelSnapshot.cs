@@ -18,6 +18,38 @@ namespace DataAccess.Migrations
                 .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("DataAccess.Models.LobbyEntity", b =>
+                {
+                    b.Property<int>("LobbyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.HasKey("LobbyId");
+
+                    b.ToTable("Lobby");
+                });
+
+            modelBuilder.Entity("DataAccess.Models.LobbyUserEntity", b =>
+                {
+                    b.Property<int>("LobbyUserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("LobbyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LobbyUserId");
+
+                    b.HasIndex("LobbyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("LobbyUser");
+                });
+
             modelBuilder.Entity("DataAccess.Models.UserEntity", b =>
                 {
                     b.Property<int>("UserId")
@@ -38,6 +70,30 @@ namespace DataAccess.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("DataAccess.Models.LobbyUserEntity", b =>
+                {
+                    b.HasOne("DataAccess.Models.LobbyEntity", "Lobby")
+                        .WithMany()
+                        .HasForeignKey("LobbyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccess.Models.UserEntity", "User")
+                        .WithMany("LobbyUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lobby");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DataAccess.Models.UserEntity", b =>
+                {
+                    b.Navigation("LobbyUsers");
                 });
 #pragma warning restore 612, 618
         }
