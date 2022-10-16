@@ -29,7 +29,12 @@ public class PlayerBuilder
 		this._player.Health = health;
 	}
 
-	public void LocationX(int x)
+    public void Item(IItem item)
+    {
+        this._player.Item = item;
+    }
+
+    public void LocationX(int x)
 	{
 		this._player.LocationX = x;
 	}

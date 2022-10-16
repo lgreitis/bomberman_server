@@ -1,4 +1,5 @@
 ﻿using Models.Behaviour;
+using Models.Behaviour.Game;
 using Models.Game;
 using Newtonsoft.Json;
 
@@ -86,6 +87,7 @@ namespace GameServer.Data
                     _playerBuilder.LocationX(0);
                     _playerBuilder.LocationY(0);
                     _playerBuilder.Health(3);
+                    _playerBuilder.Item(new Fire());
 
                     game.Players.Add(_playerBuilder.Build());
                 }
