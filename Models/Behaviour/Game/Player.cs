@@ -8,5 +8,6 @@
         public bool IsConnected { get; set; }
         public int LocationX { get; set; } = 0;
         public int LocationY { get; set; } = 0;
+        public int Health { get; set; } = 3;
     }
 }

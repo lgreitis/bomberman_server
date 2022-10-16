@@ -29,10 +29,12 @@ namespace GameServer.Data
 
             private List<Game> Games { get; set; }
             private readonly static object _lock = new object();
+            private PlayerBuilder _playerBuilder;
 
             public GameManagerInstance()
             {
                 this.Games = new List<Game>();
+                this._playerBuilder = new PlayerBuilder();
             }
 
             public void InitializeGame(int lobbyId)
@@ -77,13 +79,15 @@ namespace GameServer.Data
                         throw new Exception("User has been already registered into the game.");
                     }
 
-                    game.Players.Add(new Player
-                    {
-                        Username = username,
-                        UserId = userId,
-                        Token = token,
-                        IsConnected = true
-                    });
+                    _playerBuilder.Username(username);
+                    _playerBuilder.UserId(userId);
+                    _playerBuilder.Token(token);
+                    _playerBuilder.IsConnected();
+                    _playerBuilder.LocationX(0);
+                    _playerBuilder.LocationY(0);
+                    _playerBuilder.Health(3);
+
+                    game.Players.Add(_playerBuilder.Build());
                 }
             }
 
