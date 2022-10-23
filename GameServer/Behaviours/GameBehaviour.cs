@@ -1,5 +1,4 @@
-﻿using GameServer.Data;
-using Models.WebSocket;
+﻿using Models.WebSocket;
 using Models.WebSocket.Request;
 using Models.WebSocket.Response;
 using Newtonsoft.Json;
@@ -7,6 +6,8 @@ using Services.Services;
 using Services;
 using WebSocketSharp;
 using WebSocketSharp.Server;
+using GameServices.Singleton;
+using Models.Behaviour.Game;
 
 namespace GameServer.Behaviours
 {
@@ -34,7 +35,7 @@ namespace GameServer.Behaviours
                             {
                                 var requestData = GetRequestData<ConnectRequest>(e.Data);
 
-                                GameManager.Instance.InitializeGame(requestData.LobbyId);
+                                GamesManager.Instance.InitializeGameManager(requestData.LobbyId);
 
                                 var user = _userService
                                     .GetQueryable(x => x.LoginToken == requestData.Token)
@@ -46,7 +47,29 @@ namespace GameServer.Behaviours
                                     })
                                     .Single();
 
-                                GameManager.Instance.RegisterPlayer(requestData.LobbyId, user.UserId, user.LoginToken, user.Username);
+                                GamesManager.Instance.RegisterClient(requestData.LobbyId, new Client
+                                {
+                                    Username = user.Username,
+                                    UserId = user.UserId,
+                                    Token = user.LoginToken ?? string.Empty,
+                                    IsConnected = true,
+                                    SessionId = ID
+                                });
+
+                                Send(new WebSocketResponse
+                                {
+                                    ResponseId = WebSocketResponseId.Map,
+                                    Data = new MapResponse
+                                    {
+                                        Map = JsonConvert.DeserializeObject(GamesManager.Instance.GetMap(requestData.LobbyId))
+                                    }
+                                });
+
+                                Broadcast(GamesManager.Instance.GetSessionIds(requestData.LobbyId), new WebSocketResponse
+                                {
+                                    ResponseId = WebSocketResponseId.Players,
+                                    Data = JsonConvert.DeserializeObject(GamesManager.Instance.GetPlayers(requestData.LobbyId))
+                                });
 
                                 break;
                             }
@@ -54,12 +77,19 @@ namespace GameServer.Behaviours
                             {
                                 var requestData = GetRequestData<MoveRequest>(e.Data);
 
-                                GameManager.Instance.MovePlayer(
+                                GamesManager.Instance.MovePlayer(
                                     requestData.Token,
                                     requestData.PositiveX,
                                     requestData.NegativeX,
                                     requestData.PositiveY,
                                     requestData.NegativeY);
+
+                                var lobbyId = GamesManager.Instance.GetLobbyId(requestData.Token);
+                                Broadcast(GamesManager.Instance.GetSessionIds(lobbyId), new WebSocketResponse
+                                {
+                                    ResponseId = WebSocketResponseId.Players,
+                                    Data = JsonConvert.DeserializeObject(GamesManager.Instance.GetPlayers(lobbyId))
+                                });
 
                                 break;
                             }
@@ -69,15 +99,6 @@ namespace GameServer.Behaviours
                 {
                 }
             }
-
-            Broadcast(new WebSocketResponse
-            {
-                ResponseId = WebSocketResponseId.GameUpdate,
-                Data = new GameUpdateResponse
-                {
-                    Games = GameManager.Instance.GetGamesData()
-                }
-            });
         }
 
         private void Send(WebSocketResponse response)
@@ -92,6 +113,16 @@ namespace GameServer.Behaviours
             var json = JsonConvert.SerializeObject(response);
 
             Sessions.Broadcast(json);
+        }
+
+        private void Broadcast(List<string> sessionIds, WebSocketResponse response)
+        {
+            var json = JsonConvert.SerializeObject(response);
+
+            foreach (var sessionId in sessionIds)
+            {
+                Sessions.SendTo(json, sessionId);
+            }
         }
 
         private (bool Success, string? CommandId) GetRequestCommand(string request)

@@ -1,4 +1,4 @@
-﻿namespace Game.Model.Common
+﻿namespace GameServices.Models.CommonModels
 {
     public class Position
     {

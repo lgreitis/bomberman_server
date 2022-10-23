@@ -1,5 +1,5 @@
 ﻿using GameServices.Factories.MapFactory;
-using GameServices.Model.Map;
+using GameServices.Models.MapModels;
 
 namespace GameServices.Builders
 {
@@ -20,11 +20,5 @@ namespace GameServices.Builders
 
             return _builder.GetMap();
         }
-
-        MapDirector director = new MapDirector();
-        MapBuilder builder = new MapBuilder(MapFactory.getMapFactory(Enums.Level.First));
-        director.Builder = builder;
-
-        director.BuildMap();
     }
 }

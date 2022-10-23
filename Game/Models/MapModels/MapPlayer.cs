@@ -1,6 +1,6 @@
-﻿using Game.Model.Common;
+﻿using GameServices.Models.CommonModels;
 
-namespace GameServices.Models.Map
+namespace GameServices.Models.MapModels
 {
     public class MapPlayer
     {

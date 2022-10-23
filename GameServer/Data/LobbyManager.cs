@@ -1,5 +1,4 @@
 ﻿using Models.Behaviour.Lobby;
-using Models.Game;
 
 namespace GameServer.Data
 {
@@ -61,7 +60,7 @@ namespace GameServer.Data
                 {
                     var lobby = Lobbies.SingleOrDefault(x => x.LobbyId == lobbyId);
 
-                    return lobby != null && lobby.UserIds.Count >= 2;
+                    return lobby != null && lobby.UserIds.Count >= 1;
                 }
             }
 

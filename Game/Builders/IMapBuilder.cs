@@ -1,6 +1,4 @@
-﻿using GameServices.Model.Map;
-
-namespace GameServices.Builders
+﻿namespace GameServices.Builders
 {
     public interface IMapBuilder
     {

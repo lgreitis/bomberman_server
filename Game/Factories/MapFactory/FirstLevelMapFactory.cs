@@ -1,23 +1,31 @@
-﻿using GameServices.Model.Map;
-using GameServices.Models.Map;
+﻿using GameServices.Enums;
+using GameServices.Models.MapModels;
+using GameServices.Randomizers;
 
 namespace GameServices.Factories.MapFactory
 {
     public class FirstLevelMapFactory : MapAbstractFactory
     {
-        public override List<MapPlayer> getPlayers()
+        public override List<MapPlayer> GetPlayers()
         {
-            throw new NotImplementedException();
+            return new List<MapPlayer>();
         }
 
-        public override List<MapProp> getProps()
+        public override List<MapProp> GetProps()
         {
-            throw new NotImplementedException();
+            return new List<MapProp>();
         }
 
-        public override List<MapTile> getTiles()
+        public override List<MapTile> GetTiles()
         {
-            throw new NotImplementedException();
+            return MapTileRandomizer.GetMapTiles(32, 24, new List<MapTileType>
+            {
+                MapTileType.Cobblestone,
+                MapTileType.Grass,
+                MapTileType.Grass,
+                MapTileType.Grass,
+                MapTileType.Grass
+            });
         }
     }
 }

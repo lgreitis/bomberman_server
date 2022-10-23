@@ -1,42 +1,37 @@
 ﻿using GameServices.Factories.MapFactory;
-using GameServices.Model.Map;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GameServices.Models.MapModels;
 
 namespace GameServices.Builders
 {
     public class MapBuilder : IMapBuilder
     {
-        private Map map = new Map();
-        private MapAbstractFactory factory;
+        private Map Map = new Map();
+        private MapAbstractFactory Factory;
 
         public MapBuilder(MapAbstractFactory factory)
         {
-            this.factory = factory;
+            Factory = factory;
         }
 
         public void AddPlayers()
         {
-            map.MapTiles = factory.getTiles();
+            Map.MapTiles = Factory.GetTiles();
         }
 
         public void AddProps()
         {
-            map.MapObjects = factory.getProps();
+            Map.MapProps = Factory.GetProps();
         }
 
         public void AddTiles()
         {
-            map.MapPlayers = factory.getPlayers();
+            Map.MapPlayers = Factory.GetPlayers();
         }
 
         public Map GetMap() 
         {
-            Map builtMap = this.map;
-            this.map = new Map();
+            var builtMap = Map;
+            Map = new Map();
 
             return builtMap;
         }

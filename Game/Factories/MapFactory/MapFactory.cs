@@ -4,7 +4,7 @@ namespace GameServices.Factories.MapFactory
 {
     public class MapFactory
     {
-        public static MapAbstractFactory getMapFactory(Level level)
+        public static MapAbstractFactory GetMapFactory(Level level)
         {
             switch (level)
             {

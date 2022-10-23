@@ -1,7 +1,7 @@
-﻿using Game.Model.Common;
-using GameServices.Enums;
+﻿using GameServices.Enums;
+using GameServices.Models.CommonModels;
 
-namespace GameServices.Models.Map
+namespace GameServices.Models.MapModels
 {
     public class MapProp
     {

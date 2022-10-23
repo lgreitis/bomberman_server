@@ -2,7 +2,8 @@
 {
     public class WebSocketResponseId
     {
-        public const string GameUpdate = "GameUpdate";
         public const string StartGame = "StartGame";
+        public const string Map = "Map";
+        public const string Players = "Players";
     }
 }
