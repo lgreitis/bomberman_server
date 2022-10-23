@@ -1,5 +1,6 @@
 ﻿using Game.Model.Common;
 using GameServices.Enums;
+using GameServices.Models.Map;
 using Newtonsoft.Json;
 
 namespace GameServices.Model.Map
@@ -7,7 +8,8 @@ namespace GameServices.Model.Map
     public class Map
     {
         public List<MapTile> MapTiles { get; set; }
-        //public List<MapProp> MapObjects { get; set; } 
+        public List<MapProp> MapObjects { get; set; } 
+        public List<MapPlayer> MapPlayers { get; set; }
 
         public Map(List<MapTile> mapTiles)
         {
@@ -37,6 +39,10 @@ namespace GameServices.Model.Map
             }
 
             MapTiles = mapTiles;
+        }
+
+        public Map()
+        {
         }
 
         public string AsJson()

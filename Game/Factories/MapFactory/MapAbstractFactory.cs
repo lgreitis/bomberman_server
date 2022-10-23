@@ -1,6 +1,12 @@
-﻿namespace GameServices.Factories.MapFactory
+﻿using GameServices.Model.Map;
+using GameServices.Models.Map;
+
+namespace GameServices.Factories.MapFactory
 {
-    public class MapAbstractFactory
+    public abstract class MapAbstractFactory
     {
+        public abstract List<MapTile> getTiles();
+        public abstract List<MapProp> getProps();
+        public abstract List<MapPlayer> getPlayers();
     }
 }
