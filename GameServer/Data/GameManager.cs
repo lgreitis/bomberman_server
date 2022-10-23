@@ -1,7 +1,5 @@
 ﻿using Models.Behaviour;
-using Models.Behaviour.Game;
 using Models.Game;
-using Newtonsoft.Json;
 
 namespace GameServer.Data
 {
@@ -28,13 +26,13 @@ namespace GameServer.Data
         public class GameManagerInstance
         {
 
-            private List<Game> Games { get; set; }
+            private List<GameOld> Games { get; set; }
             private readonly static object _lock = new object();
             private PlayerBuilder _playerBuilder;
 
             public GameManagerInstance()
             {
-                this.Games = new List<Game>();
+                this.Games = new List<GameOld>();
                 this._playerBuilder = new PlayerBuilder();
             }
 
@@ -54,7 +52,7 @@ namespace GameServer.Data
                         return;
                     }
 
-                    var game = new Game
+                    var game = new GameOld
                     {
                         LobbyId = lobbyData.LobbyId,
                         ValidUserIds = lobbyData.UserIds
@@ -123,7 +121,7 @@ namespace GameServer.Data
                 }
             }
 
-            public List<Game> GetGamesData()
+            public List<GameOld> GetGamesData()
             {
                 lock (_lock)
                 {

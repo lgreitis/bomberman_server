@@ -2,7 +2,7 @@
 
 namespace Models.Behaviour
 {
-    public class Game
+    public class GameOld
     {
         public int LobbyId { get; set; }
         public List<int> ValidUserIds { get; set; } = new List<int>();

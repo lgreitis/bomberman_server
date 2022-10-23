@@ -2,6 +2,6 @@
 {
     public class GameUpdateResponse
     {
-        public List<Behaviour.Game> Games { get; set; } = new List<Behaviour.Game>();
+        public List<Behaviour.GameOld> Games { get; set; } = new List<Behaviour.GameOld>();
     }
 }
