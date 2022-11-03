@@ -1,4 +1,6 @@
 ﻿using GameServices.Enums;
+using GameServices.Models.CommonModels;
+using GameServices.Models.MapModels;
 using GameServices.Singleton;
 
 namespace GameServices.Command
@@ -18,13 +20,16 @@ namespace GameServices.Command
 
         public void Execute()
         {
-            var moveAmount = 0.1M;
             var gameManager = GamesManager.Instance.GetGameManager(_sessionId);
+            var baseMoveAmount = 0.1M;
 
             lock (gameManager.Lock)
             {
                 var client = gameManager.GetPlayer(_sessionId);
                 var currentMapTileType = gameManager.GetMapTile(client.X, client.Y) ?? MapTileType.Bedrock;
+
+                client.mapTile = gameManager.GetIMapTile(client.X, client.Y) ?? new BedrockTile { MapTileType = MapTileType.Bedrock };
+                var moveAmount = client.GetSpeed(baseMoveAmount);
 
                 if (_moveX.HasValue)
                 {

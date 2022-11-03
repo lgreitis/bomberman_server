@@ -2,6 +2,7 @@
 using GameServices.Command;
 using GameServices.Enums;
 using GameServices.Factories.MapFactory;
+using GameServices.Interfaces;
 using GameServices.Models.MapModels;
 using GameServices.Models.PlayerModels;
 
@@ -98,13 +99,13 @@ namespace GameServices.Models.ManagerModels
             }
         }
 
-        public List<MapTile> GetMapTiles()
+        public List<IMapTile> GetMapTiles()
         {
             lock (Lock)
             {
                 if (Map == null)
                 {
-                    return new List<MapTile>();
+                    return new List<IMapTile>();
                 }
 
                 return Map.MapTiles;
@@ -132,6 +133,16 @@ namespace GameServices.Models.ManagerModels
             }
 
             return Map.MapTiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY)?.MapTileType ?? null;
+        }
+
+        public IMapTile? GetIMapTile(decimal posX, decimal posY)
+        {
+            if (Map == null)
+            {
+                return null;
+            }
+
+            return Map.MapTiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY) ?? null;
         }
     }
 }

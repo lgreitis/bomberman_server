@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using GameServices.Interfaces;
+using Newtonsoft.Json;
 
 namespace GameServices.Models.MapModels
 {
     public class Map
     {
-        public List<MapTile> MapTiles { get; set; }
+        public List<IMapTile> MapTiles { get; set; }
         public List<MapProp> MapProps { get; set; } 
         public List<MapPlayer> MapPlayers { get; set; }
 

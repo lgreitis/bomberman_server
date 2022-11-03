@@ -1,4 +1,6 @@
-﻿namespace GameServices.Models.PlayerModels
+﻿using GameServices.Interfaces;
+
+namespace GameServices.Models.PlayerModels
 {
     public class Client
     {
@@ -9,5 +11,11 @@
         public string SessionId { get; set; }
         public decimal X { get; set; } = 10.00M;
         public decimal Y { get; set; } = 10.00M;
+        public IMapTile mapTile { get; set; }
+
+        public decimal GetSpeed(decimal baseSpeed)
+        {
+            return mapTile.Speed(baseSpeed);
+        }
     }
 }

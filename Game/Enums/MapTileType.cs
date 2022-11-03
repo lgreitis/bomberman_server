@@ -5,7 +5,10 @@
         Grass = 1,
         Cobblestone = 2,
         Wood = 3,
-        Bedrock = 4
+        Bedrock = 4,
+        Ice = 5,
+        Sand = 6,
+        Water = 7,
     }
 
     public static class MapTileTypeExtensions
