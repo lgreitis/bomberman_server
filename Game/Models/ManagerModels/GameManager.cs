@@ -3,7 +3,7 @@ using GameServices.Command;
 using GameServices.Enums;
 using GameServices.Factories.MapFactory;
 using GameServices.Models.MapModels;
-using Models.Behaviour.Game;
+using GameServices.Models.PlayerModels;
 
 namespace GameServices.Models.ManagerModels
 {

@@ -7,9 +7,6 @@ using Services;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using GameServices.Singleton;
-using Models.Behaviour.Game;
-using GameServices.Models.ManagerModels;
-using Newtonsoft.Json.Linq;
 using GameServices.Command;
 
 namespace GameServer.Behaviours
@@ -50,14 +47,12 @@ namespace GameServer.Behaviours
                                     })
                                     .Single();
 
-                                GamesManager.Instance.RegisterClient(requestData.LobbyId, new Client
-                                {
-                                    Username = user.Username,
-                                    UserId = user.UserId,
-                                    Token = user.LoginToken ?? string.Empty,
-                                    IsConnected = true,
-                                    SessionId = ID
-                                });
+                                GamesManager.Instance.RegisterClient(
+                                    requestData.LobbyId,
+                                    user.Username,
+                                    user.UserId,
+                                    user.LoginToken ?? string.Empty,
+                                    ID);
 
                                 var gameManager = GamesManager.Instance.GetGameManager(ID);
 

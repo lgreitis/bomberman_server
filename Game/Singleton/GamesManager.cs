@@ -1,5 +1,5 @@
 ﻿using GameServices.Models.ManagerModels;
-using Models.Behaviour.Game;
+using GameServices.Models.PlayerModels;
 using Newtonsoft.Json;
 
 namespace GameServices.Singleton
@@ -42,12 +42,19 @@ namespace GameServices.Singleton
             }
         }
 
-        public void RegisterClient(int lobbyId, Client client)
+        public void RegisterClient(int lobbyId, string username, int userId, string token, string sessionId)
         {
             lock (_lock)
             {
                 var gameManager = _gameManagers.Single(x => x.LobbyId == lobbyId);
-                gameManager.RegisterClient(client);
+                gameManager.RegisterClient(new Client
+                {
+                    Username = username,
+                    UserId = userId,
+                    Token = token,
+                    SessionId = sessionId,
+                    IsConnected = true
+                });
             }
         }
 

@@ -1,4 +1,4 @@
-﻿namespace Models.Behaviour.Game
+﻿namespace GameServices.Models.PlayerModels
 {
     public class Client
     {
