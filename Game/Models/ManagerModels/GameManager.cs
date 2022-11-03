@@ -1,20 +1,30 @@
 ﻿using GameServices.Builders;
+using GameServices.Command;
 using GameServices.Enums;
 using GameServices.Factories.MapFactory;
 using GameServices.Models.MapModels;
 using Models.Behaviour.Game;
-using Newtonsoft.Json;
 
 namespace GameServices.Models.ManagerModels
 {
     public class GameManager
     {
-        public int LobbyId { get; set; }
-        public Map? Map { get; set; }
-        public Level Level { get; set; } = Level.First;
-        public List<Client> Clients { get; set; } = new List<Client>();
+        public readonly object Lock = new object();
+        public int LobbyId { get; private set; }
+        public Map? Map { get; private set; }
+        public Level Level { get; private set; }
+        public List<Client> Clients { get; private set; }
 
-        public void InitializeLevel()
+        public GameManager(int lobbyId)
+        {
+            LobbyId = lobbyId;
+            Level = Level.First;
+            Clients = new List<Client>();
+
+            InitializeLevel();
+        }
+
+        private void InitializeLevel()
         {
             var director = new MapDirector
             {
@@ -37,9 +47,91 @@ namespace GameServices.Models.ManagerModels
             }
         }
 
+        public void RegisterClient(Client client)
+        {
+            lock (Lock)
+            {
+                var registeredClient = Clients.FirstOrDefault(x => x.Token == client.Token);
+
+                if (registeredClient == null)
+                {
+                    Clients.Add(client);
+
+                    return;
+                }
+
+                registeredClient.SessionId = client.SessionId;
+            }
+        }
+
         public List<string> GetSessionIds()
         {
-            return Clients.Select(x => x.SessionId).ToList();
+            lock (Lock)
+            {
+                return Clients.Select(x => x.SessionId).ToList();
+            }
+        }
+
+        public List<object> GetPlayers()
+        {
+            lock (Lock)
+            {
+                return Clients
+                    .Select(x => new
+                    {
+                        Username = x.Username,
+                        UserId = x.UserId,
+                        Token = x.Token,
+                        X = x.X,
+                        Y = x.Y
+                    })
+                    .Select(x => (object)x)
+                    .ToList();
+            }
+        }
+
+        public Client GetPlayer(string sessionId)
+        {
+            lock (Lock)
+            {
+                return Clients.First(x => x.SessionId == sessionId);
+            }
+        }
+
+        public List<MapTile> GetMapTiles()
+        {
+            lock (Lock)
+            {
+                if (Map == null)
+                {
+                    return new List<MapTile>();
+                }
+
+                return Map.MapTiles;
+            }
+        }
+
+        public void InvokeCommand(ICommand command)
+        {
+            command.Execute();
+        }
+
+        public bool IsValidSessionId(string sessionId)
+        {
+            lock (Lock)
+            {
+                return Clients.Any(x => x.SessionId == sessionId);
+            }
+        }
+
+        public MapTileType? GetMapTile(decimal posX, decimal posY)
+        {
+            if (Map == null)
+            {
+                return null;
+            }
+
+            return Map.MapTiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY)?.MapTileType ?? null;
         }
     }
 }

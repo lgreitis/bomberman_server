@@ -8,6 +8,9 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using GameServices.Singleton;
 using Models.Behaviour.Game;
+using GameServices.Models.ManagerModels;
+using Newtonsoft.Json.Linq;
+using GameServices.Command;
 
 namespace GameServer.Behaviours
 {
@@ -56,19 +59,21 @@ namespace GameServer.Behaviours
                                     SessionId = ID
                                 });
 
+                                var gameManager = GamesManager.Instance.GetGameManager(ID);
+
                                 Send(new WebSocketResponse
                                 {
                                     ResponseId = WebSocketResponseId.Map,
                                     Data = new MapResponse
                                     {
-                                        Map = JsonConvert.DeserializeObject(GamesManager.Instance.GetMap(requestData.LobbyId))
+                                        Map = gameManager.GetMapTiles()
                                     }
                                 });
 
-                                Broadcast(GamesManager.Instance.GetSessionIds(requestData.LobbyId), new WebSocketResponse
+                                Broadcast(gameManager.GetSessionIds(), new WebSocketResponse
                                 {
                                     ResponseId = WebSocketResponseId.Players,
-                                    Data = JsonConvert.DeserializeObject(GamesManager.Instance.GetPlayers(requestData.LobbyId))
+                                    Data = gameManager.GetPlayers()
                                 });
 
                                 break;
@@ -76,19 +81,22 @@ namespace GameServer.Behaviours
                         case WebSocketCommandId.Move:
                             {
                                 var requestData = GetRequestData<MoveRequest>(e.Data);
+                                var gameData = GamesManager.Instance.GetGameManager(ID);
 
-                                GamesManager.Instance.MovePlayer(
-                                    requestData.Token,
-                                    requestData.PositiveX,
-                                    requestData.NegativeX,
-                                    requestData.PositiveY,
-                                    requestData.NegativeY);
+                                var moveX = requestData.PositiveX != requestData.NegativeX;
+                                var moveY = requestData.PositiveY != requestData.NegativeY;
 
-                                var lobbyId = GamesManager.Instance.GetLobbyId(requestData.Token);
-                                Broadcast(GamesManager.Instance.GetSessionIds(lobbyId), new WebSocketResponse
+                                var command = new MoveCommand(
+                                    ID,
+                                    moveX ? requestData.PositiveX : null,
+                                    moveY ? requestData.PositiveY : null);
+
+                                gameData.InvokeCommand(command);
+
+                                Broadcast(gameData.GetSessionIds(), new WebSocketResponse
                                 {
                                     ResponseId = WebSocketResponseId.Players,
-                                    Data = JsonConvert.DeserializeObject(GamesManager.Instance.GetPlayers(lobbyId))
+                                    Data = gameData.GetPlayers()
                                 });
 
                                 break;
@@ -108,18 +116,11 @@ namespace GameServer.Behaviours
             Send(json);
         }
 
-        private void Broadcast(WebSocketResponse response)
-        {
-            var json = JsonConvert.SerializeObject(response);
-
-            Sessions.Broadcast(json);
-        }
-
         private void Broadcast(List<string> sessionIds, WebSocketResponse response)
         {
             var json = JsonConvert.SerializeObject(response);
 
-            foreach (var sessionId in sessionIds)
+            foreach (var sessionId in sessionIds.Distinct())
             {
                 Sessions.SendTo(json, sessionId);
             }

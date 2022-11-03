@@ -7,7 +7,7 @@
         public string Token { get; set; } = string.Empty;
         public bool IsConnected { get; set; }
         public string SessionId { get; set; }
-        public int X { get; set; } = 0;
-        public int Y { get; set; } = 0;
+        public decimal X { get; set; } = 10.00M;
+        public decimal Y { get; set; } = 10.00M;
     }
 }

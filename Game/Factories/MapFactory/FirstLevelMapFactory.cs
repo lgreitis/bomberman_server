@@ -24,7 +24,11 @@ namespace GameServices.Factories.MapFactory
                 MapTileType.Grass,
                 MapTileType.Grass,
                 MapTileType.Grass,
-                MapTileType.Grass
+                MapTileType.Grass,
+                MapTileType.Wood,
+                MapTileType.Wood,
+                MapTileType.Wood,
+                MapTileType.Wood
             });
         }
     }
