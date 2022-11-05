@@ -12,7 +12,7 @@ namespace GameServices.Models.PlayerModels
         public decimal X { get; set; } = 10.00M;
         public decimal Y { get; set; } = 10.00M;
         public IMapTile mapTile { get; set; }
-
+        public IBomb bomb { get; set; }
         public decimal GetSpeed(decimal baseSpeed)
         {
             return mapTile.Speed(baseSpeed);

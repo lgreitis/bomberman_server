@@ -3,11 +3,13 @@ using GameServices.Command;
 using GameServices.Enums;
 using GameServices.Factories.MapFactory;
 using GameServices.Interfaces;
+using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
 using GameServices.Models.PlayerModels;
 
 namespace GameServices.Models.ManagerModels
 {
+    // todo facade 
     public class GameManager
     {
         public readonly object Lock = new object();

@@ -1,4 +1,5 @@
-﻿using GameServices.Models.ManagerModels;
+﻿using GameServices.Models.BombModels;
+using GameServices.Models.ManagerModels;
 using GameServices.Models.PlayerModels;
 using Newtonsoft.Json;
 
@@ -53,8 +54,9 @@ namespace GameServices.Singleton
                     UserId = userId,
                     Token = token,
                     SessionId = sessionId,
-                    IsConnected = true
-                });
+                    IsConnected = true,
+                    bomb = new RegularBomb()
+                }) ;
             }
         }
 

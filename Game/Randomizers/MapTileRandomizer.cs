@@ -18,7 +18,7 @@ namespace GameServices.Randomizers
             {
                 for (var y = 0; y < ySize; y++)
                 {
-                    var position = new Position { X = x, Y = y };
+                    var position = new Position(x, y);
                     var mapTileType = tileTypes[random.Next(tileTypes.Count)];
 
                     if (x == 0 || y == 0 || x == (xSize - 1) || y == (ySize - 1))

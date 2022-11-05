@@ -96,6 +96,36 @@ namespace GameServer.Behaviours
 
                                 break;
                             }
+                        case WebSocketCommandId.PlaceBomb:
+                            {
+                                var gameData = GamesManager.Instance.GetGameManager(ID);
+                                if (gameData.GetPlayer(ID).bomb.IsPlaced)
+                                {
+                                    break;
+                                }
+
+                                var command = new PlaceBombCommand(gameData.GetPlayer(ID));
+                                gameData.InvokeCommand(command);
+
+                                var player = gameData.GetPlayer(ID);
+
+                                if (!player.bomb.IsPlaced)
+                                {
+                                    break;
+                                }
+
+                                Broadcast(gameData.GetSessionIds(), new WebSocketResponse
+                                {
+                                    ResponseId = WebSocketResponseId.BombPlaced,
+                                    Data = new BombPlacedResponse
+                                    {
+                                        X = player.bomb.PlacedPosition.X,
+                                        Y = player.bomb.PlacedPosition.Y
+                                    }
+                                });
+
+                                break;
+                            }
                     }
                 }
                 catch
