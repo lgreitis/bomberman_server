@@ -1,7 +1,6 @@
 ﻿using GameServer.Data;
 using Models.WebSocket;
 using Models.WebSocket.Request;
-using Models.WebSocket.Response;
 using Newtonsoft.Json;
 using Services;
 using Services.Services;
@@ -12,6 +11,11 @@ namespace GameServer.Behaviours
 {
     public class LobbyBehaviour : WebSocketBehavior
     {
+        protected override void OnClose(CloseEventArgs e)
+        {
+            LobbyManager.Instance.RemovePlayerFromLobby(this.Context.WebSocket);
+        }
+
         protected override void OnMessage(MessageEventArgs e)
         {
             using (var serviceScope = Resolver.GetScope())
@@ -47,19 +51,8 @@ namespace GameServer.Behaviours
                                     break;
                                 }
 
-                                LobbyManager.Instance.AddPlayerToLobby(requestData.LobbyId, userId);
-
-                                if (LobbyManager.Instance.CanStartGame(requestData.LobbyId))
-                                {
-                                    Broadcast(new WebSocketResponse
-                                    {
-                                        ResponseId = WebSocketResponseId.StartGame,
-                                        Data = new StartGameResponse
-                                        {
-                                            LobbyId = requestData.LobbyId
-                                        }
-                                    });
-                                }
+                                LobbyManager.Instance.AddPlayerToLobby(requestData.LobbyId, userId, this.Context.WebSocket);
+                                LobbyManager.Instance.StartIfReady(requestData.LobbyId);
 
                                 break;
                             }
@@ -69,20 +62,6 @@ namespace GameServer.Behaviours
                 {
                 }
             }
-        }
-
-        private void Send(WebSocketResponse response)
-        {
-            var json = JsonConvert.SerializeObject(response);
-
-            Send(json);
-        }
-
-        private void Broadcast(WebSocketResponse response)
-        {
-            var json = JsonConvert.SerializeObject(response);
-
-            Sessions.Broadcast(json);
         }
 
         private (bool Success, string? CommandId) GetRequestCommand(string request)
