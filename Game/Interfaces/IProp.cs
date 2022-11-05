@@ -1,9 +1,11 @@
-﻿namespace GameServices.Interfaces
+﻿using GameServices.Models.CommonModels;
+
+namespace GameServices.Interfaces
 {
     public interface IProp
     {
-        bool IsWalkable { get; set; }
-        bool IsPickable { get; set; }
-        //void Activate(Player player);
+        public Position Position { get; set; }
+        public bool IsTaken { get; set; }
+        public List<Position> GetAffectedPositions(Position placedPosition);
     }
 }
