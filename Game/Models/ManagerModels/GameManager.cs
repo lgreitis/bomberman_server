@@ -5,6 +5,7 @@ using GameServices.Factories.MapFactory;
 using GameServices.Interfaces;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
+using GameServices.Models.MapModels.Decorators;
 using GameServices.Models.PlayerModels;
 
 namespace GameServices.Models.ManagerModels
@@ -91,7 +92,7 @@ namespace GameServices.Models.ManagerModels
                         Token = x.Client.Token,
                         X = x.Position.X,
                         Y = x.Position.Y,
-                        HealthPoints = x.HealthPoints
+                        HealthPoints = x.GetHealth()
                     })
                     .Select(x => (object)x)
                     .ToList();
@@ -178,7 +179,25 @@ namespace GameServices.Models.ManagerModels
                     && y.Y == (int)x.Position.Y))
                 .ToList();
 
-            affectedPlayers.ForEach(x => x.HealthPoints -= x.HealthPoints > 0 ? 1 : 0);
+
+            for (int i = 0; i < affectedPlayers.Count; i++)
+            {
+                if (affectedPlayers[i] is DeadPlayer)
+                {
+                    continue;
+                }
+                else if (affectedPlayers[i] is BleedingPlayer)
+                {
+                    affectedPlayers[i] = new InjuredPlayer(affectedPlayers[i]);
+                }
+                else if (affectedPlayers[i] is InjuredPlayer)
+                {
+                    affectedPlayers[i] = new DeadPlayer(affectedPlayers[i]);
+                } else
+                {
+                    affectedPlayers[i] = new BleedingPlayer(affectedPlayers[i]);
+                }
+            }
         }
 
         public void HarmMapTiles(List<Position> affectedPositions)
