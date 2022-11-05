@@ -99,7 +99,8 @@ namespace GameServer.Behaviours
                         case WebSocketCommandId.PlaceBomb:
                             {
                                 var gameData = GamesManager.Instance.GetGameManager(ID);
-                                if (gameData.GetPlayer(ID).bomb.IsPlaced)
+
+                                if (gameData.GetPlayer(ID).Bomb.IsPlaced)
                                 {
                                     break;
                                 }
@@ -109,18 +110,18 @@ namespace GameServer.Behaviours
 
                                 var player = gameData.GetPlayer(ID);
 
-                                if (!player.bomb.IsPlaced)
+                                if (!player.Bomb.IsPlaced)
                                 {
                                     break;
                                 }
 
                                 Broadcast(gameData.GetSessionIds(), new WebSocketResponse
                                 {
-                                    ResponseId = WebSocketResponseId.BombPlaced,
+                                    ResponseId = WebSocketResponseId.BombUpdate,
                                     Data = new BombPlacedResponse
                                     {
-                                        X = player.bomb.PlacedPosition.X,
-                                        Y = player.bomb.PlacedPosition.Y
+                                        X = player.Bomb.PlacedPosition.X,
+                                        Y = player.Bomb.PlacedPosition.Y
                                     }
                                 });
 

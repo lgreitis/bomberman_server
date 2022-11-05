@@ -73,7 +73,7 @@ namespace GameServer.Data
                 {
                     var lobby = Lobbies.SingleOrDefault(x => x.LobbyId == lobbyId);
 
-                    if (lobby != null && lobby.LobbyUsers.Count > 1)
+                    if (lobby != null && lobby.LobbyUsers.Count >= 1)
                     {
                         lobby.Send();
                     }

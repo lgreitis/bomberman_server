@@ -54,8 +54,7 @@ namespace GameServices.Singleton
                     UserId = userId,
                     Token = token,
                     SessionId = sessionId,
-                    IsConnected = true,
-                    bomb = new RegularBomb()
+                    IsConnected = true
                 }) ;
             }
         }

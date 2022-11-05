@@ -8,7 +8,6 @@ namespace GameServices.Interfaces
         public Position Position { get; set; }
         public MapTileType MapTileType { get; set; }
 
-
-        decimal Speed(decimal baseSpeed);
+        decimal GetMoveAmount(decimal baseAmount);
     }
 }

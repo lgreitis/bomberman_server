@@ -16,13 +16,11 @@ namespace GameServices.Models.ManagerModels
         public int LobbyId { get; private set; }
         public Map? Map { get; private set; }
         public Level Level { get; private set; }
-        public List<Client> Clients { get; private set; }
 
         public GameManager(int lobbyId)
         {
             LobbyId = lobbyId;
             Level = Level.First;
-            Clients = new List<Client>();
 
             InitializeLevel();
         }
@@ -54,16 +52,18 @@ namespace GameServices.Models.ManagerModels
         {
             lock (Lock)
             {
-                var registeredClient = Clients.FirstOrDefault(x => x.Token == client.Token);
+                var registeredClient = Map.MapPlayers.FirstOrDefault(x =>
+                    x.Client != null
+                    && x.Client.Token == client.Token);
 
                 if (registeredClient == null)
                 {
-                    Clients.Add(client);
+                    Map.MapPlayers.First(x => x.Client == null).Client = client;
 
                     return;
                 }
 
-                registeredClient.SessionId = client.SessionId;
+                registeredClient.Client.SessionId = client.SessionId;
             }
         }
 
@@ -71,7 +71,10 @@ namespace GameServices.Models.ManagerModels
         {
             lock (Lock)
             {
-                return Clients.Select(x => x.SessionId).ToList();
+                return Map.MapPlayers
+                    .Where(x => x.Client != null)
+                    .Select(x => x.Client.SessionId)
+                    .ToList();
             }
         }
 
@@ -79,25 +82,28 @@ namespace GameServices.Models.ManagerModels
         {
             lock (Lock)
             {
-                return Clients
+                return Map.MapPlayers
+                    .Where(x => x.Client != null)
                     .Select(x => new
                     {
-                        Username = x.Username,
-                        UserId = x.UserId,
-                        Token = x.Token,
-                        X = x.X,
-                        Y = x.Y
+                        Username = x.Client.Username,
+                        UserId = x.Client.UserId,
+                        Token = x.Client.Token,
+                        X = x.Position.X,
+                        Y = x.Position.Y
                     })
                     .Select(x => (object)x)
                     .ToList();
             }
         }
 
-        public Client GetPlayer(string sessionId)
+        public MapPlayer GetPlayer(string sessionId)
         {
             lock (Lock)
             {
-                return Clients.First(x => x.SessionId == sessionId);
+                return Map.MapPlayers.First(x =>
+                    x.Client != null
+                    && x.Client.SessionId == sessionId);
             }
         }
 
@@ -123,18 +129,18 @@ namespace GameServices.Models.ManagerModels
         {
             lock (Lock)
             {
-                return Clients.Any(x => x.SessionId == sessionId);
+                return Map.MapPlayers.Any(x => x.Client != null && x.Client.SessionId == sessionId);
             }
         }
 
-        public MapTileType? GetMapTile(decimal posX, decimal posY)
+        public IMapTile? GetMapTile(decimal posX, decimal posY)
         {
             if (Map == null)
             {
                 return null;
             }
 
-            return Map.MapTiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY)?.MapTileType ?? null;
+            return Map.MapTiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY);
         }
 
         public IMapTile? GetIMapTile(decimal posX, decimal posY)

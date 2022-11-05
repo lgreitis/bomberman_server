@@ -9,11 +9,11 @@ namespace GameServices.Models.MapModels
         public Position Position { get; set; }
         public MapTileType MapTileType { get; set; }
 
-        private decimal speed = 0.5M;
+        private decimal Multiplier = 0.5M;
 
-        public decimal Speed(decimal baseSpeed)
+        public decimal GetMoveAmount(decimal baseAmount)
         {
-            return speed * baseSpeed;
+            return Multiplier * baseAmount;
         }
     }
 }

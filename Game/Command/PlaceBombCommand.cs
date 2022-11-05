@@ -1,25 +1,21 @@
 ﻿using GameServices.Models.CommonModels;
+using GameServices.Models.MapModels;
 using GameServices.Models.PlayerModels;
-using GameServices.Singleton;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameServices.Command
 {
     public class PlaceBombCommand : ICommand
     {
-        private Client _client;
-        public PlaceBombCommand(Client client)
+        private MapPlayer _mapPlayer;
+
+        public PlaceBombCommand(MapPlayer mapPlayer)
         {
-            _client = client;
+            _mapPlayer = mapPlayer;
         }
 
         public void Execute()
         {
-            _client.bomb.Place(new Position((int)_client.X, (int)_client.Y));
+            _mapPlayer.Bomb.Place(new Position((int)_mapPlayer.Position.X, (int)_mapPlayer.Position.Y));
         }
     }
 }

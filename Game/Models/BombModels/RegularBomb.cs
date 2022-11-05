@@ -5,7 +5,7 @@ namespace GameServices.Models.BombModels
 {
     public class RegularBomb : IBomb
     {
-        public Position PlacedPosition { get; set; }
+        public Position? PlacedPosition { get; set; }
         public bool IsPlaced { get; set; } = false;
         public int PlacedTimeStamp { get; set; }
 

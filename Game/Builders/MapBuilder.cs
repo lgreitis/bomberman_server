@@ -1,4 +1,5 @@
-﻿using GameServices.Factories.MapFactory;
+﻿using GameServices.Enums;
+using GameServices.Factories.MapFactory;
 using GameServices.Models.MapModels;
 
 namespace GameServices.Builders
@@ -15,7 +16,29 @@ namespace GameServices.Builders
 
         public void AddPlayers()
         {
-            Map.MapTiles = Factory.GetTiles();
+            Map.MapPlayers = Factory.GetPlayers();
+
+            if (Map.MapTiles == null || !Map.MapTiles.Any())
+            {
+                return;
+            }
+
+            foreach (var mapPlayer in Map.MapPlayers)
+            {
+                var mapTile = Map.MapTiles
+                    .Where(x => x.MapTileType.IsWalkable())
+                    .OrderBy(x => Guid.NewGuid())
+                    .FirstOrDefault();
+
+                if (mapTile == null)
+                {
+                    continue;
+                }
+
+                mapPlayer.Position.X = mapTile.Position.X + 0.5M;
+                mapPlayer.Position.Y = mapTile.Position.Y + 0.5M;
+                mapPlayer.MapTile = mapTile;
+            }
         }
 
         public void AddProps()
@@ -25,7 +48,7 @@ namespace GameServices.Builders
 
         public void AddTiles()
         {
-            Map.MapPlayers = Factory.GetPlayers();
+            Map.MapTiles = Factory.GetTiles();
         }
 
         public Map GetMap() 

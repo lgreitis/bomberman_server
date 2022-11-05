@@ -1,6 +1,4 @@
 ﻿using GameServices.Enums;
-using GameServices.Models.CommonModels;
-using GameServices.Models.MapModels;
 using GameServices.Singleton;
 
 namespace GameServices.Command
@@ -25,43 +23,95 @@ namespace GameServices.Command
 
             lock (gameManager.Lock)
             {
-                var client = gameManager.GetPlayer(_sessionId);
-                var currentMapTileType = gameManager.GetMapTile(client.X, client.Y) ?? MapTileType.Bedrock;
+                var player = gameManager.GetPlayer(_sessionId);
+                var updateX = player.Position.X;
+                var updateY = player.Position.Y;
+                var validMove = true;
 
-                client.mapTile = gameManager.GetIMapTile(client.X, client.Y) ?? new BedrockTile { MapTileType = MapTileType.Bedrock };
-                var moveAmount = client.GetSpeed(baseMoveAmount);
+                var moveAmount = player.GetMoveAmount(baseMoveAmount);
+
+                if (moveAmount > 1)
+                {
+                    moveAmount = 1;
+                }
 
                 if (_moveX.HasValue)
                 {
-                    var newX = client.X - moveAmount;
+                    updateX = player.Position.X - moveAmount;
 
                     if (_moveX.Value)
                     {
-                        newX = client.X + moveAmount;
-                    }
-
-                    var mapTileType = gameManager.GetMapTile(newX, client.Y);
-
-                    if (mapTileType.HasValue && mapTileType.Value.IsWalkable())
-                    {
-                        client.X = newX + (currentMapTileType == MapTileType.Wood ? moveAmount * 2 : 0);
+                        updateX = player.Position.X + moveAmount;
                     }
                 }
 
                 if (_moveY.HasValue)
                 {
-                    var newY = client.Y - moveAmount;
+                    updateY = player.Position.Y - moveAmount;
 
                     if (_moveY.Value)
                     {
-                        newY = client.Y + moveAmount;
+                        updateY = player.Position.Y + moveAmount;
+                    }
+                }
+
+                if (_moveX.HasValue && _moveY.HasValue)
+                {
+                    var xMove = (int)updateX - (int)player.Position.X;
+                    var yMove = (int)updateY - (int)player.Position.Y;
+
+                    if (xMove != 0 && yMove != 0)
+                    {
+                        validMove = false;
+
+                        var rightTile = gameManager.GetMapTile(player.Position.X + 1, player.Position.Y).MapTileType.IsWalkable();
+                        var leftTile = gameManager.GetMapTile(player.Position.X - 1, player.Position.Y).MapTileType.IsWalkable();
+                        var topTile = gameManager.GetMapTile(player.Position.X, player.Position.Y + 1).MapTileType.IsWalkable();
+                        var botTile = gameManager.GetMapTile(player.Position.X, player.Position.Y - 1).MapTileType.IsWalkable();
+
+                        if (xMove == 1 && yMove == 1)
+                        {
+                            validMove = topTile || rightTile;
+                        }
+
+                        if (xMove == -1 && yMove == -1)
+                        {
+                            validMove = botTile || leftTile;
+                        }
+
+                        if (xMove == 1 && yMove == -1)
+                        {
+                            validMove = botTile || rightTile;
+                        }
+
+                        if (xMove == -1 && yMove == 1)
+                        {
+                            validMove = topTile || leftTile;
+                        }
+                    }
+                }
+
+                if (validMove && (_moveX.HasValue || _moveY.HasValue))
+                {
+                    var movedMapTileX = gameManager.GetMapTile(updateX, player.Position.Y);
+                    var movedMapTileY = gameManager.GetMapTile(player.Position.X, updateY);
+                    var updateStrategy = false;
+
+                    if (movedMapTileX.MapTileType.IsWalkable())
+                    {
+                        player.Position.X = updateX;
+                        updateStrategy = true;
                     }
 
-                    var mapTileType = gameManager.GetMapTile(client.X, newY);
-
-                    if (mapTileType.HasValue && mapTileType.Value.IsWalkable())
+                    if (movedMapTileY.MapTileType.IsWalkable())
                     {
-                        client.Y = newY + (currentMapTileType == MapTileType.Wood ? moveAmount * 2 : 0);
+                        player.Position.Y = updateY;
+                        updateStrategy = true;
+                    }
+
+                    if (updateStrategy)
+                    {
+                        player.MapTile = gameManager.GetMapTile(player.Position.X, player.Position.Y);
                     }
                 }
             }
