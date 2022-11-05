@@ -6,8 +6,9 @@ namespace GameServices.Models.BombModels
     public class RegularBomb : IBomb
     {
         public Position? PlacedPosition { get; set; }
-        public bool IsPlaced { get; set; } = false;
+        public bool IsPlaced { get { return PlacedPosition != null; } }
         public int PlacedTimeStamp { get; set; }
+        public DateTime? ActivatableAfter { get; set; }
 
         public int Radius()
         {
@@ -16,12 +17,14 @@ namespace GameServices.Models.BombModels
 
         public List<Position> Activate()
         {
-            if (!this.IsPlaced)
+            if (!this.IsPlaced
+                || !ActivatableAfter.HasValue
+                || DateTime.Now < ActivatableAfter.Value)
             {
                 return new List<Position>();
             }
 
-            List<Position> affectedPositions = new List<Position>();
+            var affectedPositions = new List<Position>();
             
             for (int i = 0; i < Radius(); i++)
             {
@@ -36,8 +39,14 @@ namespace GameServices.Models.BombModels
 
         public void Place(Position position)
         {
-            this.PlacedPosition = position;
-            IsPlaced = true;
+            PlacedPosition = position;
+            ActivatableAfter = DateTime.Now.AddSeconds(2);
+        }
+
+        public void Reset()
+        {
+            PlacedPosition = null;
+            ActivatableAfter = null;
         }
     }
 }

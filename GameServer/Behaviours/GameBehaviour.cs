@@ -8,6 +8,7 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using GameServices.Singleton;
 using GameServices.Command;
+using GameServices.Models.ManagerModels;
 
 namespace GameServer.Behaviours
 {
@@ -96,32 +97,31 @@ namespace GameServer.Behaviours
 
                                 break;
                             }
-                        case WebSocketCommandId.PlaceBomb:
+                        case WebSocketCommandId.UseBomb:
                             {
                                 var gameData = GamesManager.Instance.GetGameManager(ID);
 
-                                if (gameData.GetPlayer(ID).Bomb.IsPlaced)
-                                {
-                                    break;
-                                }
-
-                                var command = new PlaceBombCommand(gameData.GetPlayer(ID));
+                                var command = new UseBombCommand(gameData.GetPlayer(ID));
                                 gameData.InvokeCommand(command);
-
-                                var player = gameData.GetPlayer(ID);
-
-                                if (!player.Bomb.IsPlaced)
-                                {
-                                    break;
-                                }
 
                                 Broadcast(gameData.GetSessionIds(), new WebSocketResponse
                                 {
                                     ResponseId = WebSocketResponseId.BombUpdate,
-                                    Data = new BombPlacedResponse
+                                    Data = gameData.GetBombs()
+                                });
+
+                                Broadcast(gameData.GetSessionIds(), new WebSocketResponse
+                                {
+                                    ResponseId = WebSocketResponseId.Players,
+                                    Data = gameData.GetPlayers()
+                                });
+
+                                Broadcast(gameData.GetSessionIds(), new WebSocketResponse
+                                {
+                                    ResponseId = WebSocketResponseId.Map,
+                                    Data = new MapResponse
                                     {
-                                        X = player.Bomb.PlacedPosition.X,
-                                        Y = player.Bomb.PlacedPosition.Y
+                                        Map = gameData.GetMapTiles()
                                     }
                                 });
 

@@ -6,8 +6,9 @@ namespace GameServices.Models.MapModels.Adapter
     public class PropAdapter : IBomb
     {
         public IProp Prop { get; set; }
-        public Position PlacedPosition { get; set; }
-        public bool IsPlaced { get; set; }
+        public Position? PlacedPosition { get; set; }
+        public bool IsPlaced { get { return PlacedPosition != null; } }
+        public DateTime? ActivatableAfter { get; set; }
 
         public List<Position> Activate()
         {
@@ -17,7 +18,12 @@ namespace GameServices.Models.MapModels.Adapter
         public void Place(Position position)
         {
             this.PlacedPosition = position;
-            IsPlaced = true;
+        }
+
+        public void Reset()
+        {
+            PlacedPosition = null;
+            ActivatableAfter = null;
         }
     }
 }

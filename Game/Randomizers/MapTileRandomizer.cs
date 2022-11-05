@@ -2,6 +2,7 @@
 using GameServices.Interfaces;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
+using GameServices.Models.MapModels.MapTiles;
 using System.Diagnostics.Metrics;
 using System.Linq.Expressions;
 
@@ -34,9 +35,6 @@ namespace GameServices.Randomizers
                         case MapTileType.Cobblestone:
                             mapTiles.Add(new CobblestoneTile { Position = position, MapTileType = mapTileType });
                             break;
-                        case MapTileType.Bedrock:
-                            mapTiles.Add(new BedrockTile { Position = position, MapTileType = mapTileType });
-                            break;
                         case MapTileType.Ice:
                             mapTiles.Add(new IceTile { Position = position, MapTileType = mapTileType });
                             break;
@@ -45,6 +43,13 @@ namespace GameServices.Randomizers
                             break;
                         case MapTileType.Water:
                             mapTiles.Add(new WaterTile { Position = position, MapTileType = mapTileType });
+                            break;
+                        case MapTileType.Wood:
+                            mapTiles.Add(new WoodTile { Position = position, MapTileType = mapTileType });
+                            break;
+                        case MapTileType.Bedrock:
+                        default:
+                            mapTiles.Add(new BedrockTile { Position = position, MapTileType = MapTileType.Bedrock });
                             break;
                     }
                 }

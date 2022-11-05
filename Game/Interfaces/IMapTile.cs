@@ -9,5 +9,6 @@ namespace GameServices.Interfaces
         public MapTileType MapTileType { get; set; }
 
         decimal GetMoveAmount(decimal baseAmount);
+        void Explode();
     }
 }

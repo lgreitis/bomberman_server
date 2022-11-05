@@ -15,7 +15,8 @@ namespace GameServices.Factories.MapFactory
                 .Select(x => new MapPlayer
                 {
                     Position = new PositionExtended(0, 0),
-                    Bomb = new RegularBomb()
+                    Bomb = new RegularBomb(),
+                    HealthPoints = 3
                 })
                 .ToList();
         }

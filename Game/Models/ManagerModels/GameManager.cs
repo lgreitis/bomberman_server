@@ -90,7 +90,8 @@ namespace GameServices.Models.ManagerModels
                         UserId = x.Client.UserId,
                         Token = x.Client.Token,
                         X = x.Position.X,
-                        Y = x.Position.Y
+                        Y = x.Position.Y,
+                        HealthPoints = x.HealthPoints
                     })
                     .Select(x => (object)x)
                     .ToList();
@@ -151,6 +152,44 @@ namespace GameServices.Models.ManagerModels
             }
 
             return Map.MapTiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY) ?? null;
+        }
+
+        public List<object> GetBombs()
+        {
+            lock (Lock)
+            {
+                return Map.MapPlayers
+                    .Where(x => x.Bomb.IsPlaced)
+                    .Select(x => new
+                    {
+                        X = x.Bomb.PlacedPosition.X,
+                        Y = x.Bomb.PlacedPosition.Y
+                    })
+                    .Select(x => (object)x)
+                    .ToList();
+            }
+        }
+
+        public void HarmPlayers(List<Position> affectedPositions)
+        {
+            var affectedPlayers = Map.MapPlayers
+                .Where(x => affectedPositions.Any(y =>
+                    y.X == (int)x.Position.X
+                    && y.Y == (int)x.Position.Y))
+                .ToList();
+
+            affectedPlayers.ForEach(x => x.HealthPoints -= x.HealthPoints > 0 ? 1 : 0);
+        }
+
+        public void HarmMapTiles(List<Position> affectedPositions)
+        {
+            var affectedMapTiles = Map.MapTiles
+                .Where(x => affectedPositions.Any(y =>
+                    y.X == x.Position.X
+                    && y.Y == x.Position.Y))
+                .ToList();
+
+            affectedMapTiles.ForEach(x => x.Explode());
         }
     }
 }

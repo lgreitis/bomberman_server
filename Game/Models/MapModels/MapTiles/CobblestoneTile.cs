@@ -15,5 +15,9 @@ namespace GameServices.Models.MapModels
         {
             return Multiplier * baseAmount;
         }
+
+        public void Explode()
+        {
+        }
     }
 }

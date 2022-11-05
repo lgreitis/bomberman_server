@@ -8,6 +8,7 @@ namespace GameServices.Models.MapModels
     {
         public Client? Client { get; set; }
         public PositionExtended Position { get; set; }
+        public int HealthPoints { get; set; }
         public IBomb Bomb { get; set; }
         public IMapTile? MapTile { get; set; }
 
