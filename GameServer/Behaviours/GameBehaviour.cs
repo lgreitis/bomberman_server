@@ -95,6 +95,12 @@ namespace GameServer.Behaviours
                                     Data = gameData.GetPlayers()
                                 });
 
+                                Broadcast(gameData.GetSessionIds(), new WebSocketResponse
+                                {
+                                    ResponseId = WebSocketResponseId.TextureUpdate,
+                                    Data = gameData.GetTextures()
+                                });
+
                                 break;
                             }
                         case WebSocketCommandId.UseBomb:

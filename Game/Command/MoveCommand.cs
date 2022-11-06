@@ -124,6 +124,7 @@ namespace GameServices.Command
                     if (updateStrategy)
                     {
                         player.MapTile = gameManager.GetMapTile(player.Position.X, player.Position.Y);
+                        gameManager.PickProp(player);
                     }
                 }
             }

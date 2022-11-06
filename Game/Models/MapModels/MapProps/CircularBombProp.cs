@@ -20,8 +20,10 @@ namespace GameServices.Models.MapModels.MapProps
 
                 for (int y = 0; y < Radius - x; y++)
                 {
-                    positions.Add(new Position(placedPosition.X, placedPosition.Y - y));
-                    positions.Add(new Position(placedPosition.X, placedPosition.Y + y));
+                    positions.Add(new Position(placedPosition.X + x, placedPosition.Y - y));
+                    positions.Add(new Position(placedPosition.X + x, placedPosition.Y + y));
+                    positions.Add(new Position(placedPosition.X - x, placedPosition.Y - y));
+                    positions.Add(new Position(placedPosition.X - x, placedPosition.Y + y));
                 }
             }
 

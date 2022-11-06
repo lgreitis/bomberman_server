@@ -2,6 +2,7 @@
 using GameServices.Interfaces;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
+using GameServices.Models.MapModels.Adapter;
 using GameServices.Models.MapModels.Decorators;
 using GameServices.Models.PlayerModels;
 
@@ -135,9 +136,18 @@ namespace GameServices.Facade
                 })
                 .ToList();
 
+            var propTextures = MapProps
+                .Where(x => !x.IsTaken)
+                .Select(x => new MapTexture
+                {
+                    Position = x.Position,
+                    TextureType = TextureType.Prop
+                })
+                .ToList();
+
             MapTextures = MapTextures.Where(x => !x.TimeLeft.HasValue || x.TimeLeft.Value > 0).ToList();
 
-            return bombTextures.Concat(MapTextures).Distinct().ToList();
+            return bombTextures.Concat(propTextures).Concat(MapTextures).Distinct().ToList();
         }
 
         public void HarmPlayers(List<Position> affectedPositions)
@@ -193,6 +203,31 @@ namespace GameServices.Facade
             }
 
             MapTextures.AddRange(textures);
+        }
+
+        public void PickProp(MapPlayer player)
+        {
+            if (player.HasProp || player.GetBomb().IsPlaced)
+            {
+                return;
+            }
+
+            var propToPick = MapProps.Where(x => 
+                    x.Position.X == (int)player.Position.X
+                    && x.Position.Y == (int)player.Position.Y
+                    && !x.IsTaken)
+                .FirstOrDefault();
+
+            if (propToPick == null)
+            {
+                return;
+            }
+
+            IBomb newBomb = new PropAdapter(propToPick);
+
+            propToPick.IsTaken = true;
+            player.HasProp = true;
+            player.SetBomb(newBomb);
         }
     }
 }

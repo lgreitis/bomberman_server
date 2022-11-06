@@ -132,5 +132,13 @@ namespace GameServices.Models.ManagerModels
                 Map.HarmMapTiles(affectedPositions);
             }
         }
+
+        public void PickProp(MapPlayer player)
+        {
+            lock (Lock)
+            {
+                Map.PickProp(player);
+            }
+        }
     }
 }

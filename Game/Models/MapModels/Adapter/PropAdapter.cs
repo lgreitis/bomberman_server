@@ -10,6 +10,10 @@ namespace GameServices.Models.MapModels.Adapter
         public bool IsPlaced { get { return PlacedPosition != null; } }
         public DateTime? ActivatableAfter { get; set; }
 
+        public PropAdapter(IMapProp prop)
+        {
+            Prop = prop;
+        }
         public List<Position> Activate()
         {
             return Prop.GetAffectedPositions(PlacedPosition);

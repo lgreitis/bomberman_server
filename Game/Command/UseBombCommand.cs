@@ -1,4 +1,5 @@
 ﻿using GameServices.Enums;
+using GameServices.Models.BombModels;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
 using GameServices.Models.MapModels.Decorators;
@@ -21,7 +22,7 @@ namespace GameServices.Command
             {
                 return;
             }
-            
+
             var gameManager = GamesManager.Instance.GetGameManager(_mapPlayer.Client.SessionId);
 
             lock (gameManager.Lock)
@@ -35,24 +36,24 @@ namespace GameServices.Command
                         return;
                     }
 
-                    lock (gameManager.Lock)
-                    {
-                        gameManager.HarmPlayers(affectedPositions);
-                        gameManager.HarmMapTiles(affectedPositions);
 
-                        var fireTextures = affectedPositions
-                            .Select(x => new MapTexture
-                            {
-                                Position = new Position(x.X, x.Y),
-                                TextureType = TextureType.Fire,
-                                ValidUntil = DateTime.Now.AddMilliseconds(1000),
-                            })
-                            .ToList();
-
-                        gameManager.Map.AddTextures(fireTextures);
-                    }
-
+                    _mapPlayer.HasProp = false;
+                    _mapPlayer.SetBomb(new RegularBomb());
                     _mapPlayer.GetBomb().Reset();
+
+                    var fireTextures = affectedPositions
+                                                .Select(x => new MapTexture
+                                                {
+                                                    Position = new Position(x.X, x.Y),
+                                                    TextureType = TextureType.Fire,
+                                                    ValidUntil = DateTime.Now.AddMilliseconds(1000),
+                                                })
+                                                .ToList();
+
+                    gameManager.Map.AddTextures(fireTextures);
+
+                    gameManager.HarmPlayers(affectedPositions);
+                    gameManager.HarmMapTiles(affectedPositions);
 
                     return;
                 }

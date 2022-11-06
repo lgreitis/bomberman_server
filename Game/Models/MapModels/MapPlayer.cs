@@ -9,6 +9,7 @@ namespace GameServices.Models.MapModels
         public Client? Client { get; set; }
         public PositionExtended Position { get; set; }
         public IMapTile? MapTile { get; set; }
+        public bool HasProp { get; set; } = false;
 
         public MapPlayer(
             Client? client,
