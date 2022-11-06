@@ -1,8 +1,9 @@
 ﻿using GameServices.Models.CommonModels;
+using GameServices.Prototype;
 
 namespace GameServices.Interfaces
 {
-    public interface IBomb
+    public interface IBomb : IPrototypable
     {
         public Position? PlacedPosition { get; set; }
         public bool IsPlaced { get; }

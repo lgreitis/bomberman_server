@@ -90,7 +90,18 @@ namespace GameServices.Models.ManagerModels
 
         public void InvokeCommand(ICommand command)
         {
-            command.Execute();
+            lock (Lock)
+            {
+                command.Execute();
+            }
+        }
+
+        public void RevokeCommand(ICommand command)
+        {
+            lock (Lock)
+            {
+                command.Undo();
+            }
         }
 
         public bool IsValidSessionId(string sessionId)

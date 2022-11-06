@@ -8,7 +8,6 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using GameServices.Singleton;
 using GameServices.Command;
-using GameServices.Models.ManagerModels;
 
 namespace GameServer.Behaviours
 {
@@ -104,11 +103,20 @@ namespace GameServer.Behaviours
                                 break;
                             }
                         case WebSocketCommandId.UseBomb:
+                        case WebSocketCommandId.UndoBomb:
                             {
                                 var gameData = GamesManager.Instance.GetGameManager(ID);
 
                                 var command = new UseBombCommand(gameData.GetPlayer(ID));
-                                gameData.InvokeCommand(command);
+
+                                if (requestCommand.CommandId == WebSocketCommandId.UseBomb)
+                                {
+                                    gameData.InvokeCommand(command);
+                                }
+                                else
+                                {
+                                    gameData.RevokeCommand(command);
+                                }
 
                                 Broadcast(gameData.GetSessionIds(), new WebSocketResponse
                                 {

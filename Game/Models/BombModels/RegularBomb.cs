@@ -1,5 +1,6 @@
 ﻿using GameServices.Interfaces;
 using GameServices.Models.CommonModels;
+using GameServices.Prototype;
 
 namespace GameServices.Models.BombModels
 {
@@ -47,6 +48,24 @@ namespace GameServices.Models.BombModels
         {
             PlacedPosition = null;
             ActivatableAfter = null;
+        }
+
+        public IPrototypable ShallowCopy()
+        {
+            return (IPrototypable) this.MemberwiseClone();
+        }
+
+        public IPrototypable DeepCopy()
+        {
+            var clone = (RegularBomb)this.MemberwiseClone();
+
+            clone.PlacedPosition = PlacedPosition != null
+                ? new Position(PlacedPosition.X, PlacedPosition.Y)
+                : null;
+            clone.ActivatableAfter = ActivatableAfter;
+            clone.PlacedTimeStamp = PlacedTimeStamp;
+
+            return clone;
         }
     }
 }

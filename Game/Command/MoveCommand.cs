@@ -129,5 +129,9 @@ namespace GameServices.Command
                 }
             }
         }
+
+        public void Undo()
+        {
+        }
     }
 }

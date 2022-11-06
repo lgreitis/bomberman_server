@@ -52,5 +52,30 @@ namespace GameServices.Models.MapModels
         {
             Bomb = bomb;
         }
+
+        public void SaveBombState()
+        {
+            if (SavedBombState != null)
+            {
+                return;
+            }
+
+            SavedBombState = (IBomb)Bomb.DeepCopy();
+        }
+
+        public void ResetBombState()
+        {
+            if (SavedBombState != null)
+            {
+                Bomb = (IBomb)SavedBombState.DeepCopy();
+            }
+
+            RemoveBombState();
+        }
+
+        public void RemoveBombState()
+        {
+            SavedBombState = null;
+        }
     }
 }

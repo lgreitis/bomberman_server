@@ -36,7 +36,6 @@ namespace GameServices.Command
                         return;
                     }
 
-
                     _mapPlayer.HasProp = false;
                     _mapPlayer.SetBomb(new RegularBomb());
                     _mapPlayer.GetBomb().Reset();
@@ -54,11 +53,28 @@ namespace GameServices.Command
 
                     gameManager.HarmPlayers(affectedPositions);
                     gameManager.HarmMapTiles(affectedPositions);
+                    _mapPlayer.RemoveBombState();
 
                     return;
                 }
 
+                _mapPlayer.SaveBombState();
                 _mapPlayer.GetBomb().Place(new Position((int)_mapPlayer.Position.X, (int)_mapPlayer.Position.Y));
+            }
+        }
+
+        public void Undo()
+        {
+            if (_mapPlayer is DeadPlayer)
+            {
+                return;
+            }
+
+            var gameManager = GamesManager.Instance.GetGameManager(_mapPlayer.Client.SessionId);
+
+            lock (gameManager.Lock)
+            {
+                _mapPlayer.ResetBombState();
             }
         }
     }
