@@ -16,7 +16,8 @@
         public static bool IsWalkable(this MapTileType mapTileType)
         {
             return !(mapTileType == MapTileType.Bedrock
-                     || mapTileType == MapTileType.Cobblestone);
+                     || mapTileType == MapTileType.Cobblestone
+                     || mapTileType == MapTileType.Wood);
         }
     }
 }

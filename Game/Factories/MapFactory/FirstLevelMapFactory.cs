@@ -48,7 +48,8 @@ namespace GameServices.Factories.MapFactory
                 MapTileType.Grass,
                 MapTileType.Ice,
                 MapTileType.Water,
-                MapTileType.Sand
+                MapTileType.Sand,
+                MapTileType.Wood,
             });
         }
     }
