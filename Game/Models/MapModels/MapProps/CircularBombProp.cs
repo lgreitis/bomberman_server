@@ -7,11 +7,25 @@ namespace GameServices.Models.MapModels.MapProps
     {
         public Position Position { get; set; }
         public bool IsTaken { get; set; } = false;
-        int Radius = 5;
+        private const int Radius = 5;
 
         public List<Position> GetAffectedPositions(Position placedPosition)
         {
-            return new List<Position>();
+            List<Position> positions = new List<Position>();
+
+            for (int x = 0; x < Radius; x++)
+            {
+                positions.Add(new Position(placedPosition.X - x, placedPosition.Y));
+                positions.Add(new Position(placedPosition.X + x, placedPosition.Y));
+
+                for (int y = 0; y < Radius - x; y++)
+                {
+                    positions.Add(new Position(placedPosition.X, placedPosition.Y - y));
+                    positions.Add(new Position(placedPosition.X, placedPosition.Y + y));
+                }
+            }
+
+            return positions.Distinct().ToList();
         }
     }
 }
