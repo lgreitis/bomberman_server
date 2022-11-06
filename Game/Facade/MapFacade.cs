@@ -1,22 +1,24 @@
-﻿using GameServices.Enums;
+﻿using GameServices.Facade.Subsystems;
 using GameServices.Interfaces;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
-using GameServices.Models.MapModels.Adapter;
-using GameServices.Models.MapModels.Decorators;
 using GameServices.Models.PlayerModels;
 
 namespace GameServices.Facade
 {
     public class MapFacade
     {
-        private List<IMapTile> MapTiles { get; set; } = new List<IMapTile>();
-        private List<IMapProp> MapProps { get; set; } = new List<IMapProp>();
-        private List<MapPlayer> MapPlayers { get; set; } = new List<MapPlayer>();
-        private List<MapTexture> MapTextures { get; set; } = new List<MapTexture>();
+        private MapTileSubsystem MapTileSubsystem;
+        private MapPropSubsystem MapPropSubsystem;
+        private MapPlayerSubsystem MapPlayerSubsystem;
+        private MapTextureSubsystem MapTextureSubsystem;
 
         public MapFacade()
         {
+            MapTileSubsystem = new MapTileSubsystem();
+            MapPropSubsystem = new MapPropSubsystem();
+            MapPlayerSubsystem = new MapPlayerSubsystem();
+            MapTextureSubsystem = new MapTextureSubsystem();
         }
 
         public void SetElement(List<IMapTile> mapTiles)
@@ -26,7 +28,7 @@ namespace GameServices.Facade
                 return;
             }
 
-            MapTiles = mapTiles;
+            MapTileSubsystem.Set(mapTiles);
         }
 
         public void SetElement(List<IMapProp> mapProps)
@@ -36,7 +38,7 @@ namespace GameServices.Facade
                 return;
             }
 
-            MapProps = mapProps;
+            MapPropSubsystem.Set(mapProps);
         }
 
         public void SetElement(List<MapPlayer> mapPlayers)
@@ -46,7 +48,7 @@ namespace GameServices.Facade
                 return;
             }
 
-            MapPlayers = mapPlayers;
+            MapPlayerSubsystem.Set(mapPlayers);
         }
 
         public void SetElement(List<MapTexture> mapTextures)
@@ -56,143 +58,66 @@ namespace GameServices.Facade
                 return;
             }
 
-            MapTextures = mapTextures;
+            MapTextureSubsystem.Set(mapTextures);
         }
 
         public bool DoMapTilesExists()
         {
-            return MapTiles != null && MapTiles.Any();
+            return MapTileSubsystem.DoMapTilesExists();
         }
 
         public void RegisterClient(Client client)
         {
-            var registeredClient = MapPlayers.FirstOrDefault(x =>
-                    x.Client != null
-                    && x.Client.Token == client.Token);
-
-            if (registeredClient == null)
-            {
-                MapPlayers.First(x => x.Client == null).Client = client;
-
-                return;
-            }
-
-            registeredClient.Client.SessionId = client.SessionId;
+            MapPlayerSubsystem.RegisterClient(client);
         }
 
         public List<string> GetClientSessionIds()
         {
-            return MapPlayers
-                .Where(x => x.Client != null)
-                .Select(x => x.Client.SessionId)
-                .ToList();
+            return MapPlayerSubsystem.GetClientSessionIds();
         }
 
         public List<object> GetPlayerData()
         {
-            return MapPlayers
-                .Where(x => x.Client != null)
-                .Select(x => new
-                {
-                    Username = x.Client.Username,
-                    UserId = x.Client.UserId,
-                    Token = x.Client.Token,
-                    X = x.Position.X,
-                    Y = x.Position.Y,
-                    HealthPoints = x.GetHealth()
-                })
-                .Select(x => (object)x)
-                .ToList();
+            return MapPlayerSubsystem.GetPlayerData();
         }
 
         public MapPlayer GetPlayerData(string sessionId)
         {
-            return MapPlayers.First(x => x.Client != null && x.Client.SessionId == sessionId);
+            return MapPlayerSubsystem.GetPlayerData(sessionId);
         }
 
         public List<IMapTile> GetMapTiles()
         {
-            return MapTiles;
+            return MapTileSubsystem.GetMapTiles();
         }
 
         public bool IsValidPlayerSessionId(string sessionId)
         {
-            return MapPlayers.Any(x => x.Client != null && x.Client.SessionId == sessionId);
+            return MapPlayerSubsystem.IsValidPlayerSessionId(sessionId);
         }
 
         public IMapTile? GetMapTile(decimal posX, decimal posY)
         {
-            return MapTiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY);
+            return MapTileSubsystem.GetMapTile(posX, posY);
         }
 
         public List<MapTexture> GetTextures()
         {
-            var bombTextures = MapPlayers
-                .Where(x => x.GetBomb().IsPlaced)
-                .Select(x => new MapTexture
-                {
-                    Position = x.GetBomb().PlacedPosition,
-                    TextureType = TextureType.RegularBomb
-                })
-                .ToList();
+            var bombTextures = MapPlayerSubsystem.GetTextures();
+            var propTextures = MapPropSubsystem.GetTextures();
+            var commonTextures = MapTextureSubsystem.GetTextures();
 
-            var propTextures = MapProps
-                .Where(x => !x.IsTaken)
-                .Select(x => new MapTexture
-                {
-                    Position = x.Position,
-                    TextureType = TextureType.Prop
-                })
-                .ToList();
-
-            MapTextures = MapTextures.Where(x => !x.TimeLeft.HasValue || x.TimeLeft.Value > 0).ToList();
-
-            return bombTextures.Concat(propTextures).Concat(MapTextures).Distinct().ToList();
+            return bombTextures.Concat(propTextures).Concat(commonTextures).Distinct().ToList();
         }
 
         public void HarmPlayers(List<Position> affectedPositions)
         {
-            var affectedPlayers = MapPlayers
-                .Where(x => affectedPositions.Any(y =>
-                    y.X == (int)x.Position.X
-                    && y.Y == (int)x.Position.Y))
-                .ToList();
-
-            foreach (var affectedPlayer in affectedPlayers)
-            {
-                MapPlayer newPlayer;
-
-                if (affectedPlayer is DeadPlayer)
-                {
-                    continue;
-                }
-                else if (affectedPlayer is BleedingPlayer)
-                {
-                    newPlayer = new InjuredPlayer(affectedPlayer);
-                }
-                else if (affectedPlayer is InjuredPlayer)
-                {
-                    newPlayer = new DeadPlayer(affectedPlayer);
-                }
-                else
-                {
-                    newPlayer = new BleedingPlayer(affectedPlayer);
-                }
-
-                MapPlayers.Remove(affectedPlayer);
-                MapPlayers.Add(newPlayer);
-            }
+            MapPlayerSubsystem.HarmPlayers(affectedPositions);
         }
 
         public void HarmMapTiles(List<Position> affectedPositions)
         {
-            var affectedMapTiles = MapTiles
-                .Where(x => affectedPositions.Any(y =>
-                    y.X == x.Position.X
-                    && y.Y == x.Position.Y))
-                .ToList();
-
-            affectedMapTiles.ForEach(x => x.Explode());
+            MapTileSubsystem.HarmMapTiles(affectedPositions);
         }
 
         public void AddTextures(List<MapTexture> textures)
@@ -202,32 +127,13 @@ namespace GameServices.Facade
                 return;
             }
 
-            MapTextures.AddRange(textures);
+            MapTextureSubsystem.AddTextures(textures);
         }
 
         public void PickProp(MapPlayer player)
         {
-            if (player.HasProp || player.GetBomb().IsPlaced)
-            {
-                return;
-            }
-
-            var propToPick = MapProps.Where(x => 
-                    x.Position.X == (int)player.Position.X
-                    && x.Position.Y == (int)player.Position.Y
-                    && !x.IsTaken)
-                .FirstOrDefault();
-
-            if (propToPick == null)
-            {
-                return;
-            }
-
-            IBomb newBomb = new PropAdapter(propToPick);
-
-            propToPick.IsTaken = true;
-            player.HasProp = true;
-            player.SetBomb(newBomb);
+            var prop = MapPropSubsystem.GetProp(player.Position);
+            MapPropSubsystem.GetProp(player, prop);
         }
     }
 }
