@@ -2,10 +2,8 @@
 {
     public class DeadPlayer : Damage
     {
-        private MapPlayer _player;
-        public DeadPlayer(MapPlayer player)
+        public DeadPlayer(MapPlayer player) : base(player)
         {
-            _player = player;
         }
 
         public override int GetHealth()

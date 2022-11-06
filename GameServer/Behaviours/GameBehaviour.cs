@@ -106,8 +106,8 @@ namespace GameServer.Behaviours
 
                                 Broadcast(gameData.GetSessionIds(), new WebSocketResponse
                                 {
-                                    ResponseId = WebSocketResponseId.BombUpdate,
-                                    Data = gameData.GetBombs()
+                                    ResponseId = WebSocketResponseId.TextureUpdate,
+                                    Data = gameData.GetTextures()
                                 });
 
                                 Broadcast(gameData.GetSessionIds(), new WebSocketResponse
@@ -129,7 +129,7 @@ namespace GameServer.Behaviours
                             }
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
                 }
             }

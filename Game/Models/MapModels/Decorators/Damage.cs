@@ -2,6 +2,10 @@
 {
     public abstract class Damage : MapPlayer
     {
-        public abstract int GetHealth();
+        protected Damage(MapPlayer mapPlayer) : base(mapPlayer)
+        {
+        }
+
+        public override abstract int GetHealth();
     }
 }

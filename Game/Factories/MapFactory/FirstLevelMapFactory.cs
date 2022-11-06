@@ -12,11 +12,11 @@ namespace GameServices.Factories.MapFactory
         public override List<MapPlayer> GetPlayers()
         {
             return Enumerable.Range(0, 4)
-                .Select(x => new MapPlayer
-                {
-                    Position = new PositionExtended(0, 0),
-                    Bomb = new RegularBomb()
-                })
+                .Select(x => new MapPlayer(
+                    null,
+                    new PositionExtended(0, 0),
+                    new RegularBomb(),
+                    null))
                 .ToList();
         }
 

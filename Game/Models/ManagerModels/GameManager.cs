@@ -155,19 +155,22 @@ namespace GameServices.Models.ManagerModels
             return Map.MapTiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY) ?? null;
         }
 
-        public List<object> GetBombs()
+        public List<MapTexture> GetTextures()
         {
             lock (Lock)
             {
-                return Map.MapPlayers
+                var bombTextures = Map.MapPlayers
                     .Where(x => x.Bomb.IsPlaced)
-                    .Select(x => new
+                    .Select(x => new MapTexture
                     {
-                        X = x.Bomb.PlacedPosition.X,
-                        Y = x.Bomb.PlacedPosition.Y
+                        Position = x.Bomb.PlacedPosition,
+                        TextureType = TextureType.RegularBomb
                     })
-                    .Select(x => (object)x)
                     .ToList();
+
+                Map.MapTextures = Map.MapTextures.Where(x => !x.TimeLeft.HasValue || x.TimeLeft.Value > 0).ToList();
+
+                return bombTextures.Concat(Map.MapTextures).Distinct().ToList();
             }
         }
 
@@ -179,24 +182,29 @@ namespace GameServices.Models.ManagerModels
                     && y.Y == (int)x.Position.Y))
                 .ToList();
 
-
-            for (int i = 0; i < affectedPlayers.Count; i++)
+            foreach (var affectedPlayer in affectedPlayers)
             {
-                if (affectedPlayers[i] is DeadPlayer)
+                MapPlayer newPlayer;
+
+                if (affectedPlayer is DeadPlayer)
                 {
                     continue;
                 }
-                else if (affectedPlayers[i] is BleedingPlayer)
+                else if (affectedPlayer is BleedingPlayer)
                 {
-                    affectedPlayers[i] = new InjuredPlayer(affectedPlayers[i]);
+                    newPlayer = new InjuredPlayer(affectedPlayer);
                 }
-                else if (affectedPlayers[i] is InjuredPlayer)
+                else if (affectedPlayer is InjuredPlayer)
                 {
-                    affectedPlayers[i] = new DeadPlayer(affectedPlayers[i]);
-                } else
-                {
-                    affectedPlayers[i] = new BleedingPlayer(affectedPlayers[i]);
+                    newPlayer = new DeadPlayer(affectedPlayer);
                 }
+                else
+                {
+                    newPlayer = new BleedingPlayer(affectedPlayer);
+                }
+
+                Map.MapPlayers.Remove(affectedPlayer);
+                Map.MapPlayers.Add(newPlayer);
             }
         }
 

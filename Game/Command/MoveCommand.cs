@@ -1,4 +1,5 @@
 ﻿using GameServices.Enums;
+using GameServices.Models.MapModels.Decorators;
 using GameServices.Singleton;
 
 namespace GameServices.Command
@@ -24,6 +25,12 @@ namespace GameServices.Command
             lock (gameManager.Lock)
             {
                 var player = gameManager.GetPlayer(_sessionId);
+
+                if (player is DeadPlayer)
+                {
+                    return;
+                }
+
                 var updateX = player.Position.X;
                 var updateY = player.Position.Y;
                 var validMove = true;

@@ -1,11 +1,9 @@
 ﻿namespace GameServices.Models.MapModels.Decorators
 {
-    internal class InjuredPlayer : Damage
+    public class InjuredPlayer : Damage
     {
-        private MapPlayer _player;
-        public InjuredPlayer(MapPlayer player)
+        public InjuredPlayer(MapPlayer player) : base(player)
         {
-            _player = player;
         }
 
         public override int GetHealth()

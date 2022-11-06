@@ -11,6 +11,23 @@ namespace GameServices.Models.MapModels
         public IBomb Bomb { get; set; }
         public IMapTile? MapTile { get; set; }
 
+        public MapPlayer(
+            Client? client,
+            PositionExtended position,
+            IBomb bomb,
+            IMapTile? mapTile)
+        {
+            Client = client;
+            Position = position;
+            Bomb = bomb;
+            MapTile = mapTile;
+        }
+
+        public MapPlayer(MapPlayer mapPlayer)
+            : this(mapPlayer.Client, mapPlayer.Position, mapPlayer.Bomb, mapPlayer.MapTile)
+        {
+        }
+
         public decimal GetMoveAmount(decimal baseAmount)
         {
             return MapTile.GetMoveAmount(baseAmount);
