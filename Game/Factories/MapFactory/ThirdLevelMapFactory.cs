@@ -12,9 +12,9 @@ namespace GameServices.Factories.MapFactory
             return new List<MapPlayer>();
         }
 
-        public override List<MapProp> GetProps()
+        public override List<IMapProp> GetProps()
         {
-            return new List<MapProp>();
+            return new List<IMapProp>();
         }
 
         public override List<IMapTile> GetTiles()

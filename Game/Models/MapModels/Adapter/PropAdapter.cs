@@ -5,7 +5,7 @@ namespace GameServices.Models.MapModels.Adapter
 {
     public class PropAdapter : IBomb
     {
-        public IProp Prop { get; set; }
+        public IMapProp Prop { get; set; }
         public Position? PlacedPosition { get; set; }
         public bool IsPlaced { get { return PlacedPosition != null; } }
         public DateTime? ActivatableAfter { get; set; }

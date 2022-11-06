@@ -160,10 +160,10 @@ namespace GameServices.Models.ManagerModels
             lock (Lock)
             {
                 var bombTextures = Map.MapPlayers
-                    .Where(x => x.Bomb.IsPlaced)
+                    .Where(x => x.GetBomb().IsPlaced)
                     .Select(x => new MapTexture
                     {
-                        Position = x.Bomb.PlacedPosition,
+                        Position = x.GetBomb().PlacedPosition,
                         TextureType = TextureType.RegularBomb
                     })
                     .ToList();

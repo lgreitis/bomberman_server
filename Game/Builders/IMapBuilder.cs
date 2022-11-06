@@ -1,4 +1,6 @@
-﻿namespace GameServices.Builders
+﻿using GameServices.Models.MapModels;
+
+namespace GameServices.Builders
 {
     public interface IMapBuilder
     {
@@ -7,5 +9,7 @@
         void AddProps();
 
         void AddPlayers();
+
+        Map GetMap();
     }
 }

@@ -8,7 +8,6 @@ namespace GameServices.Models.MapModels
     {
         public Client? Client { get; set; }
         public PositionExtended Position { get; set; }
-        public IBomb Bomb { get; set; }
         public IMapTile? MapTile { get; set; }
 
         public MapPlayer(
@@ -36,6 +35,21 @@ namespace GameServices.Models.MapModels
         public override int GetHealth()
         {
             return 3;
+        }
+
+        public override List<Position> ExplodeBomb()
+        {
+            return Bomb.Activate();
+        }
+
+        public IBomb GetBomb()
+        {
+            return Bomb;
+        }
+
+        public void SetBomb(IBomb bomb)
+        {
+            Bomb = bomb;
         }
     }
 }

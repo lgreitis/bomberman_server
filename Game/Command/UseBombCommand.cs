@@ -26,9 +26,9 @@ namespace GameServices.Command
 
             lock (gameManager.Lock)
             {
-                if (_mapPlayer.Bomb.IsPlaced)
+                if (_mapPlayer.GetBomb().IsPlaced)
                 {
-                    var affectedPositions = _mapPlayer.Bomb.Activate();
+                    var affectedPositions = _mapPlayer.ExplodeBomb();
 
                     if (!affectedPositions.Any())
                     {
@@ -52,12 +52,12 @@ namespace GameServices.Command
                         gameManager.Map.MapTextures.AddRange(fireTextures);
                     }
 
-                    _mapPlayer.Bomb.Reset();
+                    _mapPlayer.GetBomb().Reset();
 
                     return;
                 }
 
-                _mapPlayer.Bomb.Place(new Position((int)_mapPlayer.Position.X, (int)_mapPlayer.Position.Y));
+                _mapPlayer.GetBomb().Place(new Position((int)_mapPlayer.Position.X, (int)_mapPlayer.Position.Y));
             }
         }
     }

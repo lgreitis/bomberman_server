@@ -5,9 +5,9 @@ namespace GameServices.Builders
 {
     public class MapDirector
     {
-        private MapBuilder _builder;
+        private IMapBuilder _builder;
 
-        public MapBuilder Builder
+        public IMapBuilder Builder
         {
             set { _builder = value; }
         }

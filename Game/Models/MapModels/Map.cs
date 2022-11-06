@@ -6,7 +6,7 @@ namespace GameServices.Models.MapModels
     public class Map
     {
         public List<IMapTile> MapTiles { get; set; }
-        public List<MapProp> MapProps { get; set; } 
+        public List<IMapProp> MapProps { get; set; } 
         public List<MapPlayer> MapPlayers { get; set; }
         public List<MapTexture> MapTextures { get; set; } = new List<MapTexture>();
 
