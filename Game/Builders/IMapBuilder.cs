@@ -1,4 +1,4 @@
-﻿using GameServices.Models.MapModels;
+﻿using GameServices.Facade;
 
 namespace GameServices.Builders
 {
@@ -10,6 +10,6 @@ namespace GameServices.Builders
 
         void AddPlayers();
 
-        Map GetMap();
+        MapFacade GetMap();
     }
 }

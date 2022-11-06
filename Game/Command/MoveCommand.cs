@@ -42,6 +42,11 @@ namespace GameServices.Command
                     moveAmount = 1;
                 }
 
+                if (moveAmount == 0)
+                {
+                    moveAmount = baseMoveAmount;
+                }
+
                 if (_moveX.HasValue)
                 {
                     updateX = player.Position.X - moveAmount;

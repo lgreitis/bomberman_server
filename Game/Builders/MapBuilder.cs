@@ -1,12 +1,12 @@
 ﻿using GameServices.Enums;
+using GameServices.Facade;
 using GameServices.Factories.MapFactory;
-using GameServices.Models.MapModels;
 
 namespace GameServices.Builders
 {
     public class MapBuilder : IMapBuilder
     {
-        private Map Map = new Map();
+        private MapFacade Map = new MapFacade();
         private MapAbstractFactory Factory;
 
         public MapBuilder(MapAbstractFactory factory)
@@ -16,45 +16,46 @@ namespace GameServices.Builders
 
         public void AddPlayers()
         {
-            Map.MapPlayers = Factory.GetPlayers();
+            var players = Factory.GetPlayers();
 
-            if (Map.MapTiles == null || !Map.MapTiles.Any())
+            if (Map.DoMapTilesExists())
             {
-                return;
-            }
 
-            foreach (var mapPlayer in Map.MapPlayers)
-            {
-                var mapTile = Map.MapTiles
-                    .Where(x => x.MapTileType.IsWalkable())
-                    .OrderBy(x => Guid.NewGuid())
-                    .FirstOrDefault();
-
-                if (mapTile == null)
+                foreach (var mapPlayer in players)
                 {
-                    continue;
-                }
+                    var mapTile = Map.GetMapTiles()
+                        .Where(x => x.MapTileType.IsWalkable())
+                        .OrderBy(x => Guid.NewGuid())
+                        .FirstOrDefault();
 
-                mapPlayer.Position.X = mapTile.Position.X + 0.5M;
-                mapPlayer.Position.Y = mapTile.Position.Y + 0.5M;
-                mapPlayer.MapTile = mapTile;
+                    if (mapTile == null)
+                    {
+                        continue;
+                    }
+
+                    mapPlayer.Position.X = mapTile.Position.X + 0.5M;
+                    mapPlayer.Position.Y = mapTile.Position.Y + 0.5M;
+                    mapPlayer.MapTile = mapTile;
+                }
             }
+
+            Map.SetElement(players);
         }
 
         public void AddProps()
         {
-            Map.MapProps = Factory.GetProps();
+            Map.SetElement(Factory.GetProps());
         }
 
         public void AddTiles()
         {
-            Map.MapTiles = Factory.GetTiles();
+            Map.SetElement(Factory.GetTiles());
         }
 
-        public Map GetMap() 
+        public MapFacade GetMap() 
         {
             var builtMap = Map;
-            Map = new Map();
+            Map = new MapFacade();
 
             return builtMap;
         }

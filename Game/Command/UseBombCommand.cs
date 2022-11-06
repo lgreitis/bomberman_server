@@ -49,7 +49,7 @@ namespace GameServices.Command
                             })
                             .ToList();
 
-                        gameManager.Map.MapTextures.AddRange(fireTextures);
+                        gameManager.Map.AddTextures(fireTextures);
                     }
 
                     _mapPlayer.GetBomb().Reset();

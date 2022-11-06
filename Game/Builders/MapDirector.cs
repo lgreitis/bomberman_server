@@ -1,5 +1,5 @@
-﻿using GameServices.Factories.MapFactory;
-using GameServices.Models.MapModels;
+﻿using GameServices.Facade;
+using GameServices.Factories.MapFactory;
 
 namespace GameServices.Builders
 {
@@ -12,7 +12,7 @@ namespace GameServices.Builders
             set { _builder = value; }
         }
 
-        public Map BuildMap()
+        public MapFacade BuildMap()
         {
             _builder.AddTiles();
             _builder.AddProps();

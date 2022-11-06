@@ -1,4 +1,6 @@
 ﻿using GameServices.Enums;
+using GameServices.Facade;
+using GameServices.Interfaces;
 using GameServices.Models.BombModels;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
@@ -10,7 +12,7 @@ namespace GameServices.Builders
     public class TemplateMapBuilder : IMapBuilder
     {
         private int players;
-        private Map Map = new Map();
+        private MapFacade Map = new MapFacade();
         public TemplateMapBuilder(int players)
         {
             this.players = players;
@@ -18,21 +20,27 @@ namespace GameServices.Builders
 
         public void AddPlayers()
         {
+            var mapPlayers = new List<MapPlayer>();
+
             for (int i = 0; i < players; i++)
             {
-                Map.MapPlayers.Add(new MapPlayer(null, new PositionExtended((decimal)1.5 + i, (decimal)1.5 + i), new RegularBomb(), null));
+                mapPlayers.Add(new MapPlayer(null, new PositionExtended((decimal)1.5 + i, (decimal)1.5 + i), new RegularBomb(), null));
             }
+
+            Map.SetElement(mapPlayers);
         }
 
         public void AddProps()
         {
-            Map.MapProps.Add(new CircularBombProp { Position = new Position(1, players + 1) });
-            Map.MapProps.Add(new CircularBombProp { Position = new Position(players + 1, 1) });
+            var mapProps = new List<IMapProp>();
+            mapProps.Add(new CircularBombProp { Position = new Position(1, players + 1) });
+            mapProps.Add(new CircularBombProp { Position = new Position(players + 1, 1) });
+            Map.SetElement(mapProps);
         }
 
         public void AddTiles()
         {
-            Map.MapTiles.AddRange(MapTileRandomizer.GetMapTiles(players + 2, players + 2, new List<MapTileType>
+            Map.SetElement(MapTileRandomizer.GetMapTiles(players + 2, players + 2, new List<MapTileType>
             {
                 MapTileType.Grass,
                 MapTileType.Grass,
@@ -45,10 +53,10 @@ namespace GameServices.Builders
             }));
         }
 
-        public Map GetMap()
+        public MapFacade GetMap()
         {
             var builtMap = Map;
-            Map = new Map();
+            Map = new MapFacade();
 
             return builtMap;
         }
