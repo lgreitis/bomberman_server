@@ -42,13 +42,13 @@ namespace GameServices.Command
                     _mapPlayer.GetBomb().Reset();
 
                     var fireTextures = affectedPositions
-                                                .Select(x => new MapTexture
-                                                {
-                                                    Position = new Position(x.X, x.Y),
-                                                    TextureType = TextureType.Fire,
-                                                    ValidUntil = DateTime.Now.AddMilliseconds(1000),
-                                                })
-                                                .ToList();
+                        .Select(x => new MapTexture
+                        {
+                            Position = new Position(x.X, x.Y),
+                            TextureType = TextureType.Fire,
+                            ValidUntil = DateTime.Now.AddMilliseconds(1000),
+                        })
+                        .ToList();
 
                     gameManager.Map.AddTextures(fireTextures);
 
