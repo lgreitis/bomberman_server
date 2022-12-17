@@ -6,7 +6,7 @@ using GameServices.TemplateMethod;
 
 namespace GameServices.Models.Containers
 {
-	public class MapTextureContainer : BombExplosionTemplate
+	public sealed class MapTextureContainer : BombExplosionTemplate
 	{
 		public List<MapTexture> Textures { get; set; }
         private List<MapTexture> PendingTextures { get; set; }

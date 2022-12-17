@@ -6,15 +6,15 @@ using GameServices.TemplateMethod;
 
 namespace GameServices.Models.Containers
 {
-    public class MapPlayerContainer : BombExplosionTemplate
+    public sealed class MapPlayerContainer : BombExplosionTemplate
     {
         public List<MapPlayer> Players { get; set; }
-        private List<MapPlayer> PendingHarmPlayers { get; set; }
+        private List<int> PendingHarmPlayers { get; set; }
 
         public MapPlayerContainer()
         {
             Players = new List<MapPlayer>();
-            PendingHarmPlayers = new List<MapPlayer>();
+            PendingHarmPlayers = new List<int>();
         }
 
         public override void PrepareBombExplosion(List<Position> positions)
@@ -22,15 +22,18 @@ namespace GameServices.Models.Containers
             var affectedPlayers = Players
                 .Where(x => positions.Any(y =>
                     y.X == (int)x.Position.X
-                    && y.Y == (int)x.Position.Y))
+                    && y.Y == (int)x.Position.Y)
+                && x.Client != null)
+                .Select(x => x.Client.UserId)
                 .ToList();
 
-            PendingHarmPlayers.AddRange(PendingHarmPlayers);
+            affectedPlayers.ForEach(x => PendingHarmPlayers.Add(x));
         }
 
         public override void ExecuteBombExplosion()
         {
-            var unharmedPlayers = PendingHarmPlayers.ToList();
+            var unharmedPlayers = Players.Where(x => x.Client != null && PendingHarmPlayers.Contains(x.Client.UserId)).ToList();
+            PendingHarmPlayers = new List<int>();
 
             foreach (var affectedPlayer in unharmedPlayers)
             {
@@ -53,7 +56,6 @@ namespace GameServices.Models.Containers
                     newPlayer = new BleedingPlayer(affectedPlayer);
                 }
 
-                PendingHarmPlayers.Remove(affectedPlayer);
                 Players.Remove(affectedPlayer);
                 Players.Add(newPlayer);
             }

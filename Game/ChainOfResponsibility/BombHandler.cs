@@ -1,8 +1,10 @@
 ﻿using System;
 using GameServices.Enums;
+using GameServices.Iterator;
 using GameServices.Models.CommonModels;
 using GameServices.Models.ManagerModels;
 using GameServices.Models.MapModels;
+using GameServices.TemplateMethod;
 
 namespace GameServices.ChainOfResponsibility
 {
@@ -19,11 +21,20 @@ namespace GameServices.ChainOfResponsibility
 
         public override void HandleRequest()
         {
-            var bombExplosionActions = _gameManager.Map.GetBombExplosionTemplates();
+            var aggregate = new BombExplosionTemplateAggregate();
+            aggregate.Set(_gameManager.Map.GetBombExplosionTemplates());
 
-            foreach (var action in bombExplosionActions)
+            var iterator = aggregate.CreateIterator();
+            var item = iterator.First() as BombExplosionTemplate;
+
+            while (item != null)
             {
-                action.DoBombExplosion(_affectedPositions);
+                item.DoBombExplosion(_affectedPositions);
+
+                if (!iterator.IsDone())
+                {
+                    item = iterator.Next() as BombExplosionTemplate;
+                }
             }
 
             if (_nextHandler != null)

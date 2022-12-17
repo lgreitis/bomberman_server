@@ -133,7 +133,7 @@ namespace GameServices.Facade
             {
                 MapPlayerSubsystem.GetBombExplosionTemplate(),
                 MapTextureSubsystem.GetBombExplosionTemplate(),
-                MapTextureSubsystem.GetBombExplosionTemplate()
+                MapTileSubsystem.GetBombExplosionTemplate()
             };
         }
     }

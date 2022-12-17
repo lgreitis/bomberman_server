@@ -6,7 +6,7 @@ using GameServices.TemplateMethod;
 
 namespace GameServices.Models.Containers
 {
-    public class MapTileContainer : BombExplosionTemplate
+    public sealed class MapTileContainer : BombExplosionTemplate
     {
         public List<IMapTile> Tiles { get; set; }
         private List<IMapTile> PendingHarmTiles { get; set; }

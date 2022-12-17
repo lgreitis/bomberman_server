@@ -4,7 +4,7 @@ using GameServices.Models.CommonModels;
 
 namespace GameServices.Models.MapModels
 {
-    public class BedrockTile : IMapTile
+    public class BedrockTile : MapTile
     {
         public Position Position { get; set; }
         public MapTileType MapTileType { get; set; }

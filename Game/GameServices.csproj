@@ -18,10 +18,14 @@
     <None Remove="ChainOfResponsibility\" />
     <None Remove="TemplateMethod\" />
     <None Remove="Models\Containers\" />
+    <None Remove="Iterator\" />
+    <None Remove="Flyweight\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ChainOfResponsibility\" />
     <Folder Include="TemplateMethod\" />
     <Folder Include="Models\Containers\" />
+    <Folder Include="Iterator\" />
+    <Folder Include="Flyweight\" />
   </ItemGroup>
 </Project>
