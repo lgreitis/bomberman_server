@@ -7,6 +7,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var policy = "_policy";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: policy,
+                      policy =>
+                      {
+                          policy.AllowAnyOrigin()
+                                .AllowAnyMethod()
+                                .AllowAnyHeader();
+                      });
+});
+
 Registrator.Register(builder.Services);
 
 var app = builder.Build();
@@ -23,6 +35,7 @@ app.UseCors(builder => builder
     .AllowAnyHeader());
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors(policy);
 
 var wssv = new WebSocketServer("ws://192.168.0.153:5201");
 wssv.AddWebSocketService<GameBehaviour>("/Game");

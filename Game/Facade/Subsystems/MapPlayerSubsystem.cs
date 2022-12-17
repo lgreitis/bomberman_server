@@ -1,29 +1,36 @@
 ﻿using GameServices.Enums;
 using GameServices.Models.CommonModels;
+using GameServices.Models.Containers;
 using GameServices.Models.MapModels;
 using GameServices.Models.MapModels.Decorators;
 using GameServices.Models.PlayerModels;
+using GameServices.TemplateMethod;
 
 namespace GameServices.Facade.Subsystems
 {
     public class MapPlayerSubsystem
     {
-        private List<MapPlayer> MapPlayers { get; set; } = new List<MapPlayer>();
+        private MapPlayerContainer _container = new MapPlayerContainer();
+
+        public BombExplosionTemplate GetBombExplosionTemplate()
+        {
+            return _container;
+        }
 
         public void Set(List<MapPlayer> mapPlayers)
         {
-            MapPlayers = mapPlayers;
+            _container.Players = mapPlayers;
         }
 
         public void RegisterClient(Client client)
         {
-            var registeredClient = MapPlayers.FirstOrDefault(x =>
+            var registeredClient = _container.Players.FirstOrDefault(x =>
                     x.Client != null
                     && x.Client.Token == client.Token);
 
             if (registeredClient == null)
             {
-                MapPlayers.First(x => x.Client == null).Client = client;
+                _container.Players.First(x => x.Client == null).Client = client;
 
                 return;
             }
@@ -33,7 +40,7 @@ namespace GameServices.Facade.Subsystems
 
         public List<string> GetClientSessionIds()
         {
-            return MapPlayers
+            return _container.Players
                 .Where(x => x.Client != null)
                 .Select(x => x.Client.SessionId)
                 .ToList();
@@ -41,7 +48,7 @@ namespace GameServices.Facade.Subsystems
 
         public List<object> GetPlayerData()
         {
-            return MapPlayers
+            return _container.Players
                 .Where(x => x.Client != null)
                 .Select(x => new
                 {
@@ -58,17 +65,17 @@ namespace GameServices.Facade.Subsystems
 
         public MapPlayer GetPlayerData(string sessionId)
         {
-            return MapPlayers.First(x => x.Client != null && x.Client.SessionId == sessionId);
+            return _container.Players.First(x => x.Client != null && x.Client.SessionId == sessionId);
         }
 
         public bool IsValidPlayerSessionId(string sessionId)
         {
-            return MapPlayers.Any(x => x.Client != null && x.Client.SessionId == sessionId);
+            return _container.Players.Any(x => x.Client != null && x.Client.SessionId == sessionId);
         }
 
         public List<MapTexture> GetTextures()
         {
-            return MapPlayers
+            return _container.Players
                 .Where(x => x.GetBomb().IsPlaced)
                 .Select(x => new MapTexture
                 {
@@ -80,7 +87,7 @@ namespace GameServices.Facade.Subsystems
 
         public void HarmPlayers(List<Position> affectedPositions)
         {
-            var affectedPlayers = MapPlayers
+            var affectedPlayers = _container.Players
                 .Where(x => affectedPositions.Any(y =>
                     y.X == (int)x.Position.X
                     && y.Y == (int)x.Position.Y))
@@ -107,8 +114,8 @@ namespace GameServices.Facade.Subsystems
                     newPlayer = new BleedingPlayer(affectedPlayer);
                 }
 
-                MapPlayers.Remove(affectedPlayer);
-                MapPlayers.Add(newPlayer);
+                _container.Players.Remove(affectedPlayer);
+                _container.Players.Add(newPlayer);
             }
         }
     }

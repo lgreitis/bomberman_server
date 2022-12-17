@@ -1,4 +1,5 @@
 ﻿using Models.Behaviour.Lobby;
+using Services.Services;
 
 namespace GameServer.Data
 {
@@ -32,10 +33,20 @@ namespace GameServer.Data
                 this.Lobbies = new List<Lobby>();
             }
 
-            public void AddPlayerToLobby(int lobbyId, int userId, WebSocketSharp.WebSocket connection)
+            public void AddPlayerToLobby(int lobbyId, IUserService userService, string token, WebSocketSharp.WebSocket connection)
             {
                 lock (_lock)
                 {
+                    var userId = userService
+                                    .GetQueryable(x => x.LoginToken == token)
+                                    .Select(x => x.UserId)
+                                    .SingleOrDefault();
+
+                    if (userId <= 0)
+                    {
+                        return;
+                    }
+
                     if (!Lobbies.Any(x => x.LobbyId == lobbyId))
                     {
                         Lobbies.Add(new Lobby

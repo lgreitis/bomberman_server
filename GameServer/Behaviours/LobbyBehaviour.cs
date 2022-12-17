@@ -41,17 +41,7 @@ namespace GameServer.Behaviours
 
                                 // TODO: Does lobby exists?
 
-                                var userId = _userService
-                                    .GetQueryable(x => x.LoginToken == requestData.Token)
-                                    .Select(x => x.UserId)
-                                    .SingleOrDefault();
-
-                                if (userId <= 0)
-                                {
-                                    break;
-                                }
-
-                                LobbyManager.Instance.AddPlayerToLobby(requestData.LobbyId, userId, this.Context.WebSocket);
+                                LobbyManager.Instance.AddPlayerToLobby(requestData.LobbyId, _userService, requestData.Token, this.Context.WebSocket);
                                 LobbyManager.Instance.StartIfReady(requestData.LobbyId);
 
                                 break;

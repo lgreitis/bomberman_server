@@ -3,6 +3,7 @@ using GameServices.Interfaces;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
 using GameServices.Models.PlayerModels;
+using GameServices.TemplateMethod;
 
 namespace GameServices.Facade
 {
@@ -120,20 +121,20 @@ namespace GameServices.Facade
             MapTileSubsystem.HarmMapTiles(affectedPositions);
         }
 
-        public void AddTextures(List<MapTexture> textures)
-        {
-            if (textures == null || !textures.Any())
-            {
-                return;
-            }
-
-            MapTextureSubsystem.AddTextures(textures);
-        }
-
         public void PickProp(MapPlayer player)
         {
             var prop = MapPropSubsystem.GetProp(player.Position);
             MapPropSubsystem.GetProp(player, prop);
+        }
+
+        public List<BombExplosionTemplate> GetBombExplosionTemplates()
+        {
+            return new List<BombExplosionTemplate>
+            {
+                MapPlayerSubsystem.GetBombExplosionTemplate(),
+                MapTextureSubsystem.GetBombExplosionTemplate(),
+                MapTextureSubsystem.GetBombExplosionTemplate()
+            };
         }
     }
 }

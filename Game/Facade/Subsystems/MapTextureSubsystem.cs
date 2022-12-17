@@ -1,26 +1,28 @@
-﻿using GameServices.Models.MapModels;
+﻿using GameServices.Models.Containers;
+using GameServices.Models.MapModels;
+using GameServices.TemplateMethod;
 
 namespace GameServices.Facade.Subsystems
 {
     public class MapTextureSubsystem
     {
-        private List<MapTexture> MapTextures { get; set; } = new List<MapTexture>();
+        private MapTextureContainer _container = new MapTextureContainer();
 
         public void Set(List<MapTexture> mapTextures)
         {
-            MapTextures = mapTextures;
+            _container.Textures = mapTextures;
+        }
+
+        public BombExplosionTemplate GetBombExplosionTemplate()
+        {
+            return _container;
         }
 
         public List<MapTexture> GetTextures()
         {
-            MapTextures = MapTextures.Where(x => !x.TimeLeft.HasValue || x.TimeLeft.Value > 0).ToList();
+            _container.Textures = _container.Textures.Where(x => !x.TimeLeft.HasValue || x.TimeLeft.Value > 0).ToList();
 
-            return MapTextures;
-        }
-
-        public void AddTextures(List<MapTexture> textures)
-        {
-            MapTextures.AddRange(textures);
+            return _container.Textures;
         }
     }
 }

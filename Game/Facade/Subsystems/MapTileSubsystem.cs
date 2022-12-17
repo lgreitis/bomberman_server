@@ -1,36 +1,43 @@
 ﻿using GameServices.Interfaces;
 using GameServices.Models.CommonModels;
+using GameServices.Models.Containers;
 using GameServices.Models.MapModels;
+using GameServices.TemplateMethod;
 
 namespace GameServices.Facade.Subsystems
 {
     public class MapTileSubsystem
     {
-        private List<IMapTile> MapTiles { get; set; } = new List<IMapTile>();
+        private MapTileContainer _container = new MapTileContainer();
+
+        public BombExplosionTemplate GetBombExplosionTemplate()
+        {
+            return _container;
+        }
 
         public void Set(List<IMapTile> mapTiles)
         {
-            MapTiles = mapTiles;
+            _container.Tiles = mapTiles;
         }
 
         public bool DoMapTilesExists()
         {
-            return MapTiles != null && MapTiles.Any();
+            return _container.Tiles != null && _container.Tiles.Any();
         }
 
         public List<IMapTile> GetMapTiles()
         {
-            return MapTiles;
+            return _container.Tiles;
         }
 
         public IMapTile? GetMapTile(decimal posX, decimal posY)
         {
-            return MapTiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY);
+            return _container.Tiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY);
         }
 
         public void HarmMapTiles(List<Position> affectedPositions)
         {
-            var affectedMapTiles = MapTiles
+            var affectedMapTiles = _container.Tiles
                 .Where(x => affectedPositions.Any(y =>
                     y.X == x.Position.X
                     && y.Y == x.Position.Y))

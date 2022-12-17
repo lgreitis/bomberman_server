@@ -1,4 +1,5 @@
-﻿using GameServices.Enums;
+﻿using GameServices.ChainOfResponsibility;
+using GameServices.Enums;
 using GameServices.Models.BombModels;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
@@ -36,24 +37,13 @@ namespace GameServices.Command
                         return;
                     }
 
-                    _mapPlayer.HasProp = false;
-                    _mapPlayer.SetBomb(new RegularBomb());
-                    _mapPlayer.GetBomb().Reset();
+                    var playerBeforeHander = new PlayerBombInitiatedHandler(_mapPlayer);
+                    var bombHandler = new BombHandler(gameManager, affectedPositions);
+                    playerBeforeHander.SetSuccessor(bombHandler);
+                    var playerAfterHandler = new PlayerBombExplodedHandler(_mapPlayer);
+                    bombHandler.SetSuccessor(playerAfterHandler);
 
-                    var fireTextures = affectedPositions
-                        .Select(x => new MapTexture
-                        {
-                            Position = new Position(x.X, x.Y),
-                            TextureType = TextureType.Fire,
-                            ValidUntil = DateTime.Now.AddMilliseconds(1000),
-                        })
-                        .ToList();
-
-                    gameManager.Map.AddTextures(fireTextures);
-
-                    gameManager.HarmPlayers(affectedPositions);
-                    gameManager.HarmMapTiles(affectedPositions);
-                    _mapPlayer.RemoveBombState();
+                    playerBeforeHander.HandleRequest();
 
                     return;
                 }

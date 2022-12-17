@@ -14,4 +14,14 @@
     <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="ChainOfResponsibility\" />
+    <None Remove="TemplateMethod\" />
+    <None Remove="Models\Containers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ChainOfResponsibility\" />
+    <Folder Include="TemplateMethod\" />
+    <Folder Include="Models\Containers\" />
+  </ItemGroup>
 </Project>
