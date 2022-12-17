@@ -12,7 +12,7 @@ namespace Services
     {
         public static void Register(IServiceCollection services)
         {
-            var connectionString = "server=containers-us-west-65.railway.app;user=root;database=railway;password=CiURzce0I9ScJdalHpfj;port=6302";
+            var connectionString = "server=containers-us-west-65.railway.app;user=root;database=railway;password=Ot8k8FTKDqCgHfuMyIK9;port=6302";
             var serverVersion = ServerVersion.AutoDetect(connectionString);
 
             services.AddDbContext<Context>(

@@ -24,7 +24,7 @@ app.UseCors(builder => builder
 app.UseAuthorization();
 app.MapControllers();
 
-var wssv = new WebSocketServer("ws://192.168.0.122:5201");
+var wssv = new WebSocketServer("ws://192.168.0.153:5201");
 wssv.AddWebSocketService<GameBehaviour>("/Game");
 wssv.AddWebSocketService<LobbyBehaviour>("/Lobby");
 wssv.Start();
