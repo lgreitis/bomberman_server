@@ -10,6 +10,7 @@ using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
 using GameServices.Models.MapModels.MapProps;
 using GameServices.Models.PlayerModels;
+using GameServices.TemplateMethod;
 
 namespace GameServices.Models.ManagerModels
 {
@@ -262,6 +263,30 @@ namespace GameServices.Models.ManagerModels
             lock (Lock)
             {
                 Map.AddProp(newProp);
+            }
+        }
+
+        public BombExplosionTemplate GetPlayerContainer()
+        {
+            lock (Lock)
+            {
+                return Map.GetPlayerContainer();
+            }
+        }
+
+        public BombExplosionTemplate GetTileContainer()
+        {
+            lock (Lock)
+            {
+                return Map.GetTileContainer();
+            }
+        }
+
+        public BombExplosionTemplate GetTextureContainer()
+        {
+            lock (Lock)
+            {
+                return Map.GetTextureContainer();
             }
         }
     }

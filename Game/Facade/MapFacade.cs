@@ -164,5 +164,20 @@ namespace GameServices.Facade
         {
             MapPropSubsystem.AddProp(newProp);
         }
+
+        public BombExplosionTemplate GetTextureContainer()
+        {
+            return MapTextureSubsystem.GetContainer();
+        }
+
+        public BombExplosionTemplate GetTileContainer()
+        {
+            return MapTileSubsystem.GetContainer();
+        }
+
+        public BombExplosionTemplate GetPlayerContainer()
+        {
+            return MapPlayerSubsystem.GetContainer();
+        }
     }
 }

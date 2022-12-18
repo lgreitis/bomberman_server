@@ -1,10 +1,12 @@
 ﻿using System;
+using GameServices.Composite;
 using GameServices.Enums;
 using GameServices.Iterator;
 using GameServices.Models.CommonModels;
 using GameServices.Models.ManagerModels;
 using GameServices.Models.MapModels;
 using GameServices.TemplateMethod;
+using GameServices.Visitor;
 
 namespace GameServices.ChainOfResponsibility
 {
@@ -21,21 +23,15 @@ namespace GameServices.ChainOfResponsibility
 
         public override void HandleRequest()
         {
-            var aggregate = new BombExplosionTemplateAggregate();
-            aggregate.Set(_gameManager.Map.GetBombExplosionTemplates());
+            var playerComposite = new BombExplosionComposite(_gameManager.GetPlayerContainer());
+            var tileComposite = new BombExplosionComposite(_gameManager.GetTileContainer());
+            var textureComposite = new BombExplosionComposite(_gameManager.GetTextureContainer());
 
-            var iterator = aggregate.CreateIterator();
-            var item = iterator.First() as BombExplosionTemplate;
+            tileComposite.AddChild(playerComposite);
+            tileComposite.AddChild(textureComposite);
 
-            while (item != null)
-            {
-                item.DoBombExplosion(_affectedPositions);
-
-                if (!iterator.IsDone())
-                {
-                    item = iterator.Next() as BombExplosionTemplate;
-                }
-            }
+            var visitor = new BombExplosionVisitor(_affectedPositions);
+            tileComposite.Accept(visitor);
 
             if (_nextHandler != null)
             {

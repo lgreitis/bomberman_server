@@ -24,6 +24,8 @@
     <None Remove="Mediator\" />
     <None Remove="Interpreter\" />
     <None Remove="Memento\" />
+    <None Remove="Composite\" />
+    <None Remove="Visitor\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ChainOfResponsibility\" />
@@ -35,5 +37,7 @@
     <Folder Include="Mediator\" />
     <Folder Include="Interpreter\" />
     <Folder Include="Memento\" />
+    <Folder Include="Composite\" />
+    <Folder Include="Visitor\" />
   </ItemGroup>
 </Project>
