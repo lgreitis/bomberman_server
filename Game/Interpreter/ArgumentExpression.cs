@@ -177,7 +177,7 @@ namespace GameServices.Interpreter
                                 throw new Exception();
                             }
 
-                            context.IsResponseHidden = true;
+                            context.IsResponseHidden = false;
                             context.IsSuccessful = true;
 
                             Proxy.Proxy.Instance.Block(arguments[1], context.GameManager.LobbyId);

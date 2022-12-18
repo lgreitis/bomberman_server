@@ -50,7 +50,7 @@ namespace GameServices.Models.BombModels
         {
             PlacedPosition = null;
             ActivatableAfter = null;
-            State.Handle(this, player);
+            //State.Handle(this, player);
         }
 
         public override IPrototypable ShallowCopy()

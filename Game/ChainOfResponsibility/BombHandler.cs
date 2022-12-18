@@ -31,7 +31,7 @@ namespace GameServices.ChainOfResponsibility
             tileComposite.AddChild(textureComposite);
 
             var visitor = new BombExplosionVisitor(_affectedPositions);
-            tileComposite.Accept(visitor);
+            tileComposite.Travel(visitor);
 
             if (_nextHandler != null)
             {

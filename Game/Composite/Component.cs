@@ -28,7 +28,8 @@ namespace GameServices.Composite
 			return Children[index];
 		}
 
-		public abstract void Accept(IVisitor visitor);
-	}
+        public abstract void Accept(IVisitor visitor);
+        public abstract void Travel(IVisitor visitor);
+    }
 }
 

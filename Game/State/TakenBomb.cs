@@ -14,7 +14,7 @@ namespace GameServices.State
         public override void Handle(Bomb bomb, MapPlayer player)
         {
             bomb.State = new ActiveBomb();
-            player.Client.ChatParticipant.Send("activated bomb");
+            player.Client.ChatParticipant.Send("placed bomb");
         }
     }
 }

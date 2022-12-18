@@ -37,7 +37,7 @@ namespace GameServices.Iterator
 
             for (var i = 0; i < component.Count; i++)
             {
-                Pick(component);
+                Pick(component.GetChild(i));
             }
         }
 
@@ -52,7 +52,7 @@ namespace GameServices.Iterator
         public Component this[int index]
         {
             get { return flattened[index]; }
-            set { items.Insert(index, value); Flatten(); }
+            set { items.Insert(index, value); flattened.Add(value); }
         }
     }
 }

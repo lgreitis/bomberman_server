@@ -12,17 +12,17 @@ namespace GameServices.Models.MapModels.Adapter
         {
             Prop = prop;
         }
-        public override List<Position> Activate()
+        public override List<Position> Activate(MapPlayer player)
         {
             return Prop.GetAffectedPositions(PlacedPosition);
         }
 
-        public override void Place(Position position)
+        public override void Place(Position position, MapPlayer player)
         {
             this.PlacedPosition = position;
         }
 
-        public override void Reset()
+        public override void Reset(MapPlayer player)
         {
             PlacedPosition = null;
             ActivatableAfter = null;

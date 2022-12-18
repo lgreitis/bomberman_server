@@ -10,7 +10,7 @@ namespace GameServices.Interfaces
         public BombState State { get; set; } = new TakenBomb();
 
         public Position? PlacedPosition { get; set; }
-        public bool IsPlaced { get; }
+        public bool IsPlaced { get { return PlacedPosition != null;  } }
         public DateTime? ActivatableAfter { get; set; }
         public abstract void Place(Position position, MapPlayer player);
         public abstract List<Position> Activate(MapPlayer player);

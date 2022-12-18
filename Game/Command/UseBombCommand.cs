@@ -49,14 +49,12 @@ namespace GameServices.Command
                     playerAfterHandler.SetSuccessor(propHandler);
 
                     playerBeforeHander.HandleRequest();
-                    _mapPlayer.Client.ChatParticipant.Send("exploded bomb");
 
                     return;
                 }
 
                 _mapPlayer.SaveBombState();
                 _mapPlayer.GetBomb().Place(new Position((int)_mapPlayer.Position.X, (int)_mapPlayer.Position.Y), _mapPlayer);
-                _mapPlayer.Client.ChatParticipant.Send("placed bomb");
             }
         }
 

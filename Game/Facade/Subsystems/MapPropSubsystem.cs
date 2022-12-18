@@ -44,7 +44,7 @@ namespace GameServices.Facade.Subsystems
                 return;
             }
 
-            IBomb newBomb = new PropAdapter(prop);
+            Bomb newBomb = new PropAdapter(prop);
             prop.IsTaken = true;
             player.HasProp = true;
             player.SetBomb(newBomb);

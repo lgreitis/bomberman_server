@@ -15,10 +15,10 @@ namespace GameServices.Composite
 			this.bombExplosionTemplate = bombExplosionTemplate;
 		}
 
-        public override void Accept(IVisitor visitor)
+        public override void Travel(IVisitor visitor)
         {
             var aggregate = new CompositeAggregate();
-            aggregate.Set(new List<Component>{ this });
+            aggregate.Set(new List<Component> { this });
 
             var iterator = aggregate.CreateIterator();
             var item = iterator.First() as BombExplosionComposite;
@@ -30,6 +30,11 @@ namespace GameServices.Composite
 
                 item = iterator.Next() as BombExplosionComposite;
             }
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            bombExplosionTemplate.Accept(visitor);
         }
     }
 }
