@@ -15,7 +15,7 @@ namespace GameServices.Facade.Subsystems
             return _container;
         }
 
-        public void Set(List<IMapTile> mapTiles)
+        public void Set(List<MapTile> mapTiles)
         {
             _container.Tiles = mapTiles;
         }
@@ -25,12 +25,12 @@ namespace GameServices.Facade.Subsystems
             return _container.Tiles != null && _container.Tiles.Any();
         }
 
-        public List<IMapTile> GetMapTiles()
+        public List<MapTile> GetMapTiles()
         {
             return _container.Tiles;
         }
 
-        public IMapTile? GetMapTile(decimal posX, decimal posY)
+        public MapTile? GetMapTile(decimal posX, decimal posY)
         {
             return _container.Tiles.FirstOrDefault(x => x.Position.X == (int)posX && x.Position.Y == (int)posY);
         }

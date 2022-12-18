@@ -8,13 +8,13 @@ namespace GameServices.Models.Containers
 {
     public sealed class MapTileContainer : BombExplosionTemplate
     {
-        public List<IMapTile> Tiles { get; set; }
-        private List<IMapTile> PendingHarmTiles { get; set; }
+        public List<MapTile> Tiles { get; set; }
+        private List<MapTile> PendingHarmTiles { get; set; }
 
         public MapTileContainer()
         {
-            Tiles = new List<IMapTile>();
-            PendingHarmTiles = new List<IMapTile>();
+            Tiles = new List<MapTile>();
+            PendingHarmTiles = new List<MapTile>();
         }
 
         public override void PrepareBombExplosion(List<Position> positions)

@@ -4,19 +4,9 @@ using GameServices.Models.CommonModels;
 
 namespace GameServices.Models.MapModels
 {
-    public class GrassTile : IMapTile
+    public class GrassTile : MapTile
     {
-        public Position Position { get; set; }
-        public MapTileType MapTileType { get; set; }
-
-        private decimal Multiplier = 1.0M;
-
-        public decimal GetMoveAmount(decimal baseAmount)
-        {
-            return Multiplier * baseAmount;
-        }
-
-        public void Explode()
+        public override void Explode()
         {
         }
     }

@@ -22,7 +22,7 @@ namespace GameServices.Facade
             MapTextureSubsystem = new MapTextureSubsystem();
         }
 
-        public void SetElement(List<IMapTile> mapTiles)
+        public void SetElement(List<MapTile> mapTiles)
         {
             if (mapTiles == null)
             {
@@ -87,7 +87,7 @@ namespace GameServices.Facade
             return MapPlayerSubsystem.GetPlayerData(sessionId);
         }
 
-        public List<IMapTile> GetMapTiles()
+        public List<MapTile> GetMapTiles()
         {
             return MapTileSubsystem.GetMapTiles();
         }
@@ -97,7 +97,7 @@ namespace GameServices.Facade
             return MapPlayerSubsystem.IsValidPlayerSessionId(sessionId);
         }
 
-        public IMapTile? GetMapTile(decimal posX, decimal posY)
+        public MapTile? GetMapTile(decimal posX, decimal posY)
         {
             return MapTileSubsystem.GetMapTile(posX, posY);
         }

@@ -1,4 +1,5 @@
-﻿using GameServices.Interfaces;
+﻿using GameServices.Flyweight;
+using GameServices.Interfaces;
 using GameServices.Models.CommonModels;
 using GameServices.Models.PlayerModels;
 
@@ -8,14 +9,14 @@ namespace GameServices.Models.MapModels
     {
         public Client? Client { get; set; }
         public PositionExtended Position { get; set; }
-        public IMapTile? MapTile { get; set; }
+        public MapTile? MapTile { get; set; }
         public bool HasProp { get; set; } = false;
 
         public MapPlayer(
             Client? client,
             PositionExtended position,
             IBomb bomb,
-            IMapTile? mapTile)
+            MapTile? mapTile)
         {
             Client = client;
             Position = position;
@@ -30,7 +31,7 @@ namespace GameServices.Models.MapModels
 
         public decimal GetMoveAmount(decimal baseAmount)
         {
-            return MapTile.GetMoveAmount(baseAmount);
+            return MapTileFlyweightFactory.Get(MapTile.MapTileType).GetMoveAmount(baseAmount);
         }
 
         public override int GetHealth()

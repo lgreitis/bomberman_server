@@ -36,7 +36,7 @@ namespace GameServices.Factories.MapFactory
             return mapProps.DistinctBy(x => new { x.Position.X, x.Position.Y}).ToList();
         }
 
-        public override List<IMapTile> GetTiles()
+        public override List<MapTile> GetTiles()
         {
             return MapTileRandomizer.GetMapTiles(32, 24, new List<MapTileType>
             {

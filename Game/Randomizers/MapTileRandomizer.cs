@@ -10,9 +10,9 @@ namespace GameServices.Randomizers
 {
     public static class MapTileRandomizer
     {
-        public static List<IMapTile> GetMapTiles(int xSize, int ySize, List<MapTileType> tileTypes)
+        public static List<MapTile> GetMapTiles(int xSize, int ySize, List<MapTileType> tileTypes)
         {
-            var mapTiles = new List<IMapTile>();
+            var mapTiles = new List<MapTile>();
             var random = new Random();
 
             for (var x = 0; x < xSize; x++)

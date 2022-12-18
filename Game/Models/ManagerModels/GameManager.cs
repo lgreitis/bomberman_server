@@ -80,7 +80,7 @@ namespace GameServices.Models.ManagerModels
             }
         }
 
-        public List<IMapTile> GetMapTiles()
+        public List<MapTile> GetMapTiles()
         {
             lock (Lock)
             {
@@ -112,7 +112,7 @@ namespace GameServices.Models.ManagerModels
             }
         }
 
-        public IMapTile? GetMapTile(decimal posX, decimal posY)
+        public MapTile? GetMapTile(decimal posX, decimal posY)
         {
             lock (Lock)
             {

@@ -20,6 +20,7 @@
     <None Remove="Models\Containers\" />
     <None Remove="Iterator\" />
     <None Remove="Flyweight\" />
+    <None Remove="Flyweight\MapTileFlyweights\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ChainOfResponsibility\" />
@@ -27,5 +28,6 @@
     <Folder Include="Models\Containers\" />
     <Folder Include="Iterator\" />
     <Folder Include="Flyweight\" />
+    <Folder Include="Flyweight\MapTileFlyweights\" />
   </ItemGroup>
 </Project>
