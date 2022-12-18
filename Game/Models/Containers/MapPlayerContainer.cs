@@ -6,7 +6,7 @@ using GameServices.TemplateMethod;
 
 namespace GameServices.Models.Containers
 {
-    public sealed class MapPlayerContainer : BombExplosionTemplate
+    public sealed class MapPlayerContainer : BombExplosionTemplate, ICloneable
     {
         public List<MapPlayer> Players { get; set; }
         private List<int> PendingHarmPlayers { get; set; }
@@ -62,6 +62,11 @@ namespace GameServices.Models.Containers
                 Players.Remove(affectedPlayer);
                 Players.Add(newPlayer);
             }
+        }
+
+        public object Clone()
+        {
+            return (MapPlayerContainer)this.MemberwiseClone();
         }
     }
 }

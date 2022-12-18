@@ -10,7 +10,7 @@ namespace GameServices.Interpreter
                 return;
             }
 
-            var key = context.CommandText.Split(' ')[0];
+            var key = context.CommandText.Split(' ')[0].ToLower();
 
             switch (key)
             {
@@ -22,6 +22,12 @@ namespace GameServices.Interpreter
                     break;
                 case "undo":
                     context.Type = Enums.ContextCommandType.UndoBomb;
+                    break;
+                case "copy":
+                    context.Type = Enums.ContextCommandType.Copy;
+                    break;
+                case "paste":
+                    context.Type = Enums.ContextCommandType.Paste;
                     break;
                 case "block":
                     context.Type = Enums.ContextCommandType.Block;

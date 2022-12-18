@@ -6,7 +6,7 @@ using GameServices.TemplateMethod;
 
 namespace GameServices.Models.Containers
 {
-	public sealed class MapTextureContainer : BombExplosionTemplate
+	public sealed class MapTextureContainer : BombExplosionTemplate, ICloneable
 	{
 		public List<MapTexture> Textures { get; set; }
         private List<MapTexture> PendingTextures { get; set; }
@@ -40,6 +40,11 @@ namespace GameServices.Models.Containers
                 Textures.Add(texture);
                 PendingTextures.Remove(texture);
             }
+        }
+
+        public object Clone()
+        {
+            return (MapTextureContainer)this.MemberwiseClone();
         }
     }
 }

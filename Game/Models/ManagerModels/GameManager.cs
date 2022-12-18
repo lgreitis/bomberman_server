@@ -5,8 +5,10 @@ using GameServices.Facade;
 using GameServices.Factories.MapFactory;
 using GameServices.Interfaces;
 using GameServices.Mediator;
+using GameServices.Memento;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
+using GameServices.Models.MapModels.MapProps;
 using GameServices.Models.PlayerModels;
 
 namespace GameServices.Models.ManagerModels
@@ -19,6 +21,7 @@ namespace GameServices.Models.ManagerModels
         public Level Level { get; private set; }
         public Chatroom Chatroom { get; private set; }
         public Participant Logger { get; private set; }
+        private FacadeCaretaker? FacadeCaretaker { get; set; }
 
         public GameManager(int lobbyId)
         {
@@ -53,6 +56,38 @@ namespace GameServices.Models.ManagerModels
                     Level = Level.First;
                     Logger.Send("Level 3 has started.");
                     break;
+            }
+        }
+
+        public bool SaveState()
+        {
+            lock (Lock)
+            {
+                if (FacadeCaretaker != null)
+                {
+                    return false;
+                }
+
+                FacadeCaretaker = new FacadeCaretaker();
+                FacadeCaretaker.Memento = Map.CreateMemento();
+
+                return true;
+            }
+        }
+
+        public bool RestoreState()
+        {
+            lock (Lock)
+            {
+                if (FacadeCaretaker == null)
+                {
+                    return false;
+                }
+
+                Map.SetMemento(FacadeCaretaker.Memento);
+                FacadeCaretaker = null;
+
+                return true;
             }
         }
 
@@ -219,6 +254,14 @@ namespace GameServices.Models.ManagerModels
                 }
 
                 return Chatroom.Retrieve(participant, allMessages);
+            }
+        }
+
+        public void AddProp(IMapProp newProp)
+        {
+            lock (Lock)
+            {
+                Map.AddProp(newProp);
             }
         }
     }

@@ -23,6 +23,7 @@
     <None Remove="Flyweight\MapTileFlyweights\" />
     <None Remove="Mediator\" />
     <None Remove="Interpreter\" />
+    <None Remove="Memento\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ChainOfResponsibility\" />
@@ -33,5 +34,6 @@
     <Folder Include="Flyweight\MapTileFlyweights\" />
     <Folder Include="Mediator\" />
     <Folder Include="Interpreter\" />
+    <Folder Include="Memento\" />
   </ItemGroup>
 </Project>

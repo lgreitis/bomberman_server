@@ -45,5 +45,15 @@ namespace GameServices.Facade.Subsystems
 
             affectedMapTiles.ForEach(x => x.Explode());
         }
+
+        public MapTileContainer GetContainer()
+        {
+            return _container;
+        }
+
+        public void SetContainer(MapTileContainer container)
+        {
+            _container = container;
+        }
     }
 }

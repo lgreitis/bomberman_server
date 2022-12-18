@@ -38,10 +38,15 @@ namespace GameServices.Command
                     }
 
                     var playerBeforeHander = new PlayerBombInitiatedHandler(_mapPlayer);
+
                     var bombHandler = new BombHandler(gameManager, affectedPositions);
                     playerBeforeHander.SetSuccessor(bombHandler);
+
                     var playerAfterHandler = new PlayerBombExplodedHandler(_mapPlayer);
                     bombHandler.SetSuccessor(playerAfterHandler);
+
+                    var propHandler = new PropGeneratorHandler(gameManager);
+                    playerAfterHandler.SetSuccessor(propHandler);
 
                     playerBeforeHander.HandleRequest();
                     _mapPlayer.Client.ChatParticipant.Send("exploded bomb");

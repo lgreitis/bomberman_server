@@ -2,11 +2,12 @@
 using GameServices.Interfaces;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
+using GameServices.Prototype;
 using GameServices.TemplateMethod;
 
 namespace GameServices.Models.Containers
 {
-    public sealed class MapTileContainer : BombExplosionTemplate
+    public sealed class MapTileContainer : BombExplosionTemplate, ICloneable
     {
         public List<MapTile> Tiles { get; set; }
         private List<MapTile> PendingHarmTiles { get; set; }
@@ -37,6 +38,11 @@ namespace GameServices.Models.Containers
                 tile.Explode();
                 PendingHarmTiles.Remove(tile);
             }
+        }
+
+        public object Clone()
+        {
+            return (MapTileContainer)this.MemberwiseClone();
         }
     }
 }

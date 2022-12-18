@@ -6,8 +6,10 @@ namespace GameServices.Enums
 		UseBomb,
 		UndoBomb,
 		PublicMessage,
+		Block,
 		PrivateMessage,
-		Block
-    }
+		Copy,
+		Paste
+	}
 }
 

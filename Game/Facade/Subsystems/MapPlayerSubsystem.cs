@@ -146,5 +146,20 @@ namespace GameServices.Facade.Subsystems
 
             return participant.Client.ChatParticipant;
         }
+
+        public MapPlayerContainer GetContainer()
+        {
+            return _container;
+        }
+
+        public void SetContainer(MapPlayerContainer container)
+        {
+            _container = container;
+        }
+
+        public List<MapPlayer> GetPlayers()
+        {
+            return _container.Players;
+        }
     }
 }
