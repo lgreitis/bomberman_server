@@ -100,6 +100,14 @@ namespace GameServices.Models.ManagerModels
             }
         }
 
+        public void Disconnect(string sessionId)
+        {
+            lock (Lock)
+            {
+                Map.DisconnectClient(sessionId);
+            }
+        }
+
         public List<string> GetSessionIds()
         {
             lock (Lock)
@@ -113,6 +121,14 @@ namespace GameServices.Models.ManagerModels
             lock (Lock)
             {
                 return Map.GetPlayerData();
+            }
+        }
+
+        public string GetSessionIdByUserName(string username)
+        {
+            lock (Lock)
+            {
+                return Map.GetSessionIdByPlayerName(username);
             }
         }
 
@@ -287,6 +303,42 @@ namespace GameServices.Models.ManagerModels
             lock (Lock)
             {
                 return Map.GetTextureContainer();
+            }
+        }
+
+        public void KickKillPlayer(string username)
+        {
+            lock (Lock)
+            {
+                Proxy.Proxy.Instance.Block(username, LobbyId);
+                Map.KickKillPlayer(username);
+            }
+        }
+
+        public bool MoveToNewLevel()
+        {
+            lock (Lock)
+            {
+                var playersStanding = Map.CountAlivePlayers();
+
+                if ((Level == Level.Second && playersStanding < 4)
+                    || (Level == Level.Third && playersStanding < 3))
+                {
+                    var kickPlayerUsernames = Map.GetDeadPlayers();
+
+                    foreach (var pl in kickPlayerUsernames)
+                    {
+                        KickKillPlayer(pl);
+                    }
+
+                    InitializeLevel();
+                    FacadeCaretaker = null;
+                    Log("Level has changed");
+
+                    return true;
+                }
+
+                return false;
             }
         }
     }

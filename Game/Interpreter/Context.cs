@@ -13,6 +13,7 @@ namespace GameServices.Interpreter
 		public ContextCommandType? Type { get; set; }
         public bool IsSuccessful { get; set; }
         public bool IsResponseHidden { get; set; }
+		public List<string> AffectedSessionIds { get; set; } = new List<string>();
 
         public Context(GameManager gameManager, string sessionId, string commandText)
 		{

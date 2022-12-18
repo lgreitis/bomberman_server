@@ -180,7 +180,10 @@ namespace GameServices.Interpreter
                             context.IsResponseHidden = false;
                             context.IsSuccessful = true;
 
-                            Proxy.Proxy.Instance.Block(arguments[1], context.GameManager.LobbyId);
+                            participant.Send($"blocked {recipient.Name}");
+                            context.AffectedSessionIds.Add(context.GameManager.GetSessionIdByUserName(arguments[1]));
+
+                            context.GameManager.KickKillPlayer(arguments[1]);
 
                             break;
                         }

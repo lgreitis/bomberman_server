@@ -39,6 +39,7 @@ namespace GameServices.Facade.Subsystems
             }
 
             registeredClient.Client.SessionId = client.SessionId;
+            registeredClient.Client.IsConnected = true;
             registeredClient.Client.ChatParticipant.Send("reconnected");
         }
 
@@ -160,6 +161,49 @@ namespace GameServices.Facade.Subsystems
         public List<MapPlayer> GetPlayers()
         {
             return _container.Players;
+        }
+
+        public void DisconnectClient(string sessionId)
+        {
+            var player = _container.Players.Where(x => x.Client != null && x.Client.SessionId == sessionId && x.Client.IsConnected).FirstOrDefault();
+
+            if (player == null)
+            {
+                return;
+            }
+
+            player.Client.ChatParticipant.Send("disconnected");
+            player.Client.IsConnected = false;
+        }
+
+        public string GetSessionIdByPlayerName(string username)
+        {
+            var player = _container.Players.FirstOrDefault(x => x.Client != null & x.Client.Username == username);
+
+            if (player == null)
+            {
+                return string.Empty;
+            }
+
+            return player.Client.SessionId;
+        }
+
+        public void KickKillPlayer(string username)
+        {
+            _container.KillPlayer(username);
+        }
+
+        public int CountAlivePlayers()
+        {
+            return _container.Players.Count(x => x.GetHealth() > 0);
+        }
+
+        public List<string> GetDeadPlayers()
+        {
+            return _container.Players
+                .Where(x => x.Client != null && x.GetHealth() <= 0)
+                .Select(x => x.Client.Username)
+                .ToList();
         }
     }
 }

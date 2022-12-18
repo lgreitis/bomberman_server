@@ -179,5 +179,30 @@ namespace GameServices.Facade
         {
             return MapPlayerSubsystem.GetContainer();
         }
+
+        public void DisconnectClient(string sessionId)
+        {
+            MapPlayerSubsystem.DisconnectClient(sessionId);
+        }
+
+        public string GetSessionIdByPlayerName(string username)
+        {
+            return MapPlayerSubsystem.GetSessionIdByPlayerName(username);
+        }
+
+        public void KickKillPlayer(string username)
+        {
+            MapPlayerSubsystem.KickKillPlayer(username);
+        }
+
+        public int CountAlivePlayers()
+        {
+            return MapPlayerSubsystem.CountAlivePlayers();
+        }
+
+        public List<string> GetDeadPlayers()
+        {
+            return MapPlayerSubsystem.GetDeadPlayers();
+        }
     }
 }

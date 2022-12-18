@@ -17,6 +17,20 @@ namespace GameServices.Models.Containers
             PendingHarmPlayers = new List<int>();
         }
 
+        public void KillPlayer(string username)
+        {
+            var player = Players.FirstOrDefault(x => x.Client != null && x.Client.Username == username);
+
+            if (player == null)
+            {
+                return;
+            }
+
+            MapPlayer newPlayer = new DeadPlayer(player);
+            Players.Remove(player);
+            Players.Add(newPlayer);
+        }
+
         public override void PrepareBombExplosion(List<Position> positions)
         {
             var affectedPlayers = Players

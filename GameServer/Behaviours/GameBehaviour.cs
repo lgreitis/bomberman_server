@@ -16,6 +16,23 @@ namespace GameServer.Behaviours
 {
     public class GameBehaviour : WebSocketBehavior
     {
+        protected override void OnClose(CloseEventArgs e)
+        {
+            try
+            {
+                var gameData = GamesManager.Instance.GetGameManager(ID);
+
+                if (gameData != null)
+                {
+                    gameData.Disconnect(ID);
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
         protected override void OnMessage(MessageEventArgs e)
         {
             using (var serviceScope = Resolver.GetScope())
@@ -189,6 +206,11 @@ namespace GameServer.Behaviours
                                     }
                                 }
 
+                                if (context.IsSuccessful && context.AffectedSessionIds.Any() && context.AffectedSessionIds.All(x => !string.IsNullOrWhiteSpace(x)))
+                                {
+                                    Broadcast(context.AffectedSessionIds, new WebSocketResponse { ResponseId = WebSocketResponseId.Blocked });
+                                }
+
                                 // Zemiau privalo buti visi broadcastai kaip ir usecommand requeste
 
                                 Broadcast(gameData.GetSessionIds(), new WebSocketResponse
@@ -235,6 +257,13 @@ namespace GameServer.Behaviours
                                 Data = messages
                             });
                             Sessions.SendTo(json, sessionId);
+                        }
+
+                        var moveToNextLevel = gameData.MoveToNewLevel();
+
+                        if (moveToNextLevel)
+                        {
+                            Broadcast(sessionIds, new WebSocketResponse { ResponseId = WebSocketResponseId.Reconnect });
                         }
                     }
                 }
