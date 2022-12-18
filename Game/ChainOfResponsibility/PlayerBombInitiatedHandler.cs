@@ -17,7 +17,7 @@ namespace GameServices.ChainOfResponsibility
 		{
             _mapPlayer.HasProp = false;
             _mapPlayer.SetBomb(new RegularBomb());
-            _mapPlayer.GetBomb().Reset();
+            _mapPlayer.GetBomb().Reset(_mapPlayer);
 
             if (_nextHandler != null)
 			{

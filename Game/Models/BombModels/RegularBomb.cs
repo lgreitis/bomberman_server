@@ -1,22 +1,21 @@
 ﻿using GameServices.Interfaces;
 using GameServices.Models.CommonModels;
+using GameServices.Models.MapModels;
 using GameServices.Prototype;
+using GameServices.State;
 
 namespace GameServices.Models.BombModels
 {
-    public class RegularBomb : IBomb
+    public class RegularBomb : Bomb
     {
-        public Position? PlacedPosition { get; set; }
-        public bool IsPlaced { get { return PlacedPosition != null; } }
         public int PlacedTimeStamp { get; set; }
-        public DateTime? ActivatableAfter { get; set; }
 
         public int Radius()
         {
             return 4;
         }
 
-        public List<Position> Activate()
+        public override List<Position> Activate(MapPlayer player)
         {
             if (!this.IsPlaced
                 || !ActivatableAfter.HasValue
@@ -35,27 +34,31 @@ namespace GameServices.Models.BombModels
                 affectedPositions.Add(new Position(PlacedPosition.X, PlacedPosition.Y + i));
             }
 
+            State.Handle(this, player);
+
             return affectedPositions.Distinct().ToList();
         }
 
-        public void Place(Position position)
+        public override void Place(Position position, MapPlayer player)
         {
             PlacedPosition = position;
             ActivatableAfter = DateTime.Now.AddSeconds(2);
+            State.Handle(this, player);
         }
 
-        public void Reset()
+        public override void Reset(MapPlayer player)
         {
             PlacedPosition = null;
             ActivatableAfter = null;
+            State.Handle(this, player);
         }
 
-        public IPrototypable ShallowCopy()
+        public override IPrototypable ShallowCopy()
         {
             return (IPrototypable) this.MemberwiseClone();
         }
 
-        public IPrototypable DeepCopy()
+        public override IPrototypable DeepCopy()
         {
             var clone = (RegularBomb)this.MemberwiseClone();
 

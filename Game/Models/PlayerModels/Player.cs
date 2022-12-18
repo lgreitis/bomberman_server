@@ -5,8 +5,8 @@ namespace GameServices.Models.PlayerModels
 {
     public abstract class Player
     {
-        protected IBomb Bomb;
-        protected IBomb? SavedBombState;
+        protected Bomb Bomb;
+        protected Bomb? SavedBombState;
         public abstract int GetHealth();
         public abstract List<Position> ExplodeBomb();
     }

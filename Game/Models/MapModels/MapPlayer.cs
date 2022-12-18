@@ -15,7 +15,7 @@ namespace GameServices.Models.MapModels
         public MapPlayer(
             Client? client,
             PositionExtended position,
-            IBomb bomb,
+            Bomb bomb,
             MapTile? mapTile)
         {
             Client = client;
@@ -41,15 +41,15 @@ namespace GameServices.Models.MapModels
 
         public override List<Position> ExplodeBomb()
         {
-            return Bomb.Activate();
+            return Bomb.Activate(this);
         }
 
-        public IBomb GetBomb()
+        public Bomb GetBomb()
         {
             return Bomb;
         }
 
-        public void SetBomb(IBomb bomb)
+        public void SetBomb(Bomb bomb)
         {
             Bomb = bomb;
         }
@@ -61,14 +61,14 @@ namespace GameServices.Models.MapModels
                 return;
             }
 
-            SavedBombState = (IBomb)Bomb.DeepCopy();
+            SavedBombState = (Bomb)Bomb.DeepCopy();
         }
 
         public void ResetBombState()
         {
             if (SavedBombState != null)
             {
-                Bomb = (IBomb)SavedBombState.DeepCopy();
+                Bomb = (Bomb)SavedBombState.DeepCopy();
                 Client.ChatParticipant.Send("picked placed bomb");
             }
 

@@ -55,7 +55,7 @@ namespace GameServices.Command
                 }
 
                 _mapPlayer.SaveBombState();
-                _mapPlayer.GetBomb().Place(new Position((int)_mapPlayer.Position.X, (int)_mapPlayer.Position.Y));
+                _mapPlayer.GetBomb().Place(new Position((int)_mapPlayer.Position.X, (int)_mapPlayer.Position.Y), _mapPlayer);
                 _mapPlayer.Client.ChatParticipant.Send("placed bomb");
             }
         }
