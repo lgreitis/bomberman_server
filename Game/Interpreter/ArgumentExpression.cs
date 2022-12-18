@@ -106,9 +106,58 @@ namespace GameServices.Interpreter
 
                             break;
                         }
+                    case Enums.ContextCommandType.Copy:
+                        {
+                            var participant = context.GameManager.GetChatParticipant(context.SessionId);
+
+                            if (participant == null)
+                            {
+                                throw new Exception();
+                            }
+
+                            context.IsResponseHidden = true;
+                            context.IsSuccessful = true;
+                            var ok = context.GameManager.SaveState();
+
+                            if (!ok)
+                            {
+                                context.GameManager.Log("Game state is already saved", participant);
+                            }
+                            else
+                            {
+                                context.GameManager.Log("Game state has been saved. Use 'paste' to restore it!");
+                            }
+
+                            break;
+                        }
+                    case Enums.ContextCommandType.Paste:
+                        {
+                            var participant = context.GameManager.GetChatParticipant(context.SessionId);
+
+                            if (participant == null)
+                            {
+                                throw new Exception();
+                            }
+
+                            context.IsResponseHidden = true;
+                            context.IsSuccessful = true;
+                            var ok = context.GameManager.RestoreState();
+
+                            if (!ok)
+                            {
+                                context.GameManager.Log("There is no saved game state. Use 'copy' to do it", participant);
+                            }
+                            else
+                            {
+                                context.GameManager.Log("Game state has been restored. Use 'copy' to do it again!");
+                            }
+
+
+                            break;
+                        }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 context.IsResponseHidden = false;
                 context.IsSuccessful = false;

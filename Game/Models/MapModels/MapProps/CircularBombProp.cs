@@ -29,5 +29,10 @@ namespace GameServices.Models.MapModels.MapProps
 
             return positions.Distinct().ToList();
         }
+
+        public object Clone()
+        {
+            return (CircularBombProp)this.MemberwiseClone();
+        }
     }
 }

@@ -3,7 +3,7 @@ using GameServices.Models.CommonModels;
 
 namespace GameServices.Models.MapModels
 {
-    public class MapTexture
+    public class MapTexture : ICloneable
     {
         public TextureType TextureType { get; set; }
         public Position Position { get; set; }
@@ -24,6 +24,11 @@ namespace GameServices.Models.MapModels
 
                 return (ValidUntil.Value - DateTime.Now).Milliseconds;
             }
+        }
+
+        public object Clone()
+        {
+            return (MapTexture)this.MemberwiseClone();
         }
     }
 }

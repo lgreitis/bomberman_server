@@ -1,7 +1,9 @@
 ﻿using GameServices.Facade.Subsystems;
 using GameServices.Interfaces;
 using GameServices.Mediator;
+using GameServices.Memento;
 using GameServices.Models.CommonModels;
+using GameServices.Models.Containers;
 using GameServices.Models.MapModels;
 using GameServices.Models.PlayerModels;
 using GameServices.TemplateMethod;
@@ -21,6 +23,16 @@ namespace GameServices.Facade
             MapPropSubsystem = new MapPropSubsystem();
             MapPlayerSubsystem = new MapPlayerSubsystem();
             MapTextureSubsystem = new MapTextureSubsystem();
+        }
+
+        public FacadeMemento CreateMemento()
+        {
+            return new FacadeMemento(MapPlayerSubsystem.GetPlayers(), MapPropSubsystem.GetMapProps(), MapTileSubsystem.GetMapTiles(), MapTextureSubsystem.GetTextures());
+        }
+
+        public void SetMemento(FacadeMemento memento)
+        {
+            memento.Restore(this);
         }
 
         public void SetElement(List<MapTile> mapTiles)

@@ -2,7 +2,7 @@
 
 namespace GameServices.Interfaces
 {
-    public interface IMapProp
+    public interface IMapProp : ICloneable
     {
         public Position Position { get; set; }
         public bool IsTaken { get; set; }

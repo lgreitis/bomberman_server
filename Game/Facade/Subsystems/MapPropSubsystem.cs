@@ -55,5 +55,15 @@ namespace GameServices.Facade.Subsystems
         {
             MapProps.Add(newProp);
         }
+
+        public List<IMapProp> GetMapProps()
+        {
+            return MapProps;
+        }
+
+        public void SetMapProps(List<IMapProp> props)
+        {
+            MapProps = props;
+        }
     }
 }

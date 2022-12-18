@@ -5,7 +5,7 @@ using GameServices.Models.PlayerModels;
 
 namespace GameServices.Models.MapModels
 {
-    public class MapPlayer : Player
+    public class MapPlayer : Player, ICloneable
     {
         public Client? Client { get; set; }
         public PositionExtended Position { get; set; }
@@ -78,6 +78,11 @@ namespace GameServices.Models.MapModels
         public void RemoveBombState()
         {
             SavedBombState = null;
+        }
+
+        public object Clone()
+        {
+            return (MapPlayer)this.MemberwiseClone();
         }
     }
 }

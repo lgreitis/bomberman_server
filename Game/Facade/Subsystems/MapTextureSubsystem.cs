@@ -24,5 +24,15 @@ namespace GameServices.Facade.Subsystems
 
             return _container.Textures;
         }
+
+        public MapTextureContainer GetContainer()
+        {
+            return _container;
+        }
+
+        public void SetContainer(MapTextureContainer container)
+        {
+            _container = container;
+        }
     }
 }
