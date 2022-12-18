@@ -1,5 +1,6 @@
 ﻿using System;
 using GameServices.Command;
+using GameServices.Mediator;
 using Models.WebSocket.Request;
 
 namespace GameServices.Interpreter
@@ -103,6 +104,34 @@ namespace GameServices.Interpreter
                             }
 
                             context.IsSuccessful = true;
+
+                            break;
+                        }
+                    case Enums.ContextCommandType.Block:
+                        {
+                            if (arguments.Length < 2)
+                            {
+                                throw new Exception();
+                            }
+
+                            var participant = context.GameManager.GetChatParticipant(context.SessionId);
+
+                            if (participant == null)
+                            {
+                                throw new Exception();
+                            }
+
+                            var recipient = context.GameManager.GetChatParticipantByUsername(arguments[1]);
+
+                            if (recipient == null || recipient == participant)
+                            {
+                                throw new Exception();
+                            }
+
+                            context.IsResponseHidden = true;
+                            context.IsSuccessful = true;
+
+                            Proxy.Proxy.Instance.Block(arguments[1], context.GameManager.LobbyId);
 
                             break;
                         }

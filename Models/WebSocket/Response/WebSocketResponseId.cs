@@ -7,5 +7,6 @@
         public const string Players = "Players";
         public const string TextureUpdate = "TextureUpdate";
         public const string MessagesUpdate = "MessagesUpdate";
+        public const string Blocked = "Blocked";
     }
 }

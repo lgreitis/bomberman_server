@@ -23,6 +23,9 @@ namespace GameServices.Interpreter
                 case "undo":
                     context.Type = Enums.ContextCommandType.UndoBomb;
                     break;
+                case "block":
+                    context.Type = Enums.ContextCommandType.Block;
+                    break;
                 default:
                     context.Type = Enums.ContextCommandType.PublicMessage;
                     break;

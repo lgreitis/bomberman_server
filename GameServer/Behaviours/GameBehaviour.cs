@@ -10,6 +10,7 @@ using GameServices.Singleton;
 using GameServices.Command;
 using GameServices.Models.ManagerModels;
 using GameServices.Interpreter;
+using GameServices.Proxy;
 
 namespace GameServer.Behaviours
 {
@@ -52,31 +53,40 @@ namespace GameServer.Behaviours
                                     })
                                     .Single();
 
-                                GamesManager.Instance.RegisterClient(
+                                /*GamesManager.Instance.RegisterClient(
                                     requestData.LobbyId,
                                     user.Username,
                                     user.UserId,
                                     user.LoginToken ?? string.Empty,
-                                    ID);
+                                    ID);*/
 
-                                gameData = GamesManager.Instance.GetGameManager(ID);
-
-                                Send(new WebSocketResponse
+                                try
                                 {
-                                    ResponseId = WebSocketResponseId.Map,
-                                    Data = new MapResponse
+                                    Proxy.Instance.Connect(requestData.LobbyId, user.Username, user.UserId, user.LoginToken ?? string.Empty, ID);
+
+                                    gameData = GamesManager.Instance.GetGameManager(ID);
+
+                                    Send(new WebSocketResponse
                                     {
-                                        Map = gameData.GetMapTiles()
-                                    }
-                                });
+                                        ResponseId = WebSocketResponseId.Map,
+                                        Data = new MapResponse
+                                        {
+                                            Map = gameData.GetMapTiles()
+                                        }
+                                    });
 
-                                Broadcast(gameData.GetSessionIds(), new WebSocketResponse
+                                    Broadcast(gameData.GetSessionIds(), new WebSocketResponse
+                                    {
+                                        ResponseId = WebSocketResponseId.Players,
+                                        Data = gameData.GetPlayers()
+                                    });
+
+                                    allMessages = true;
+                                }
+                                catch (BlockedException ex)
                                 {
-                                    ResponseId = WebSocketResponseId.Players,
-                                    Data = gameData.GetPlayers()
-                                });
-
-                                allMessages = true;
+                                    Send(new WebSocketResponse { ResponseId = WebSocketResponseId.Blocked });
+                                }
 
                                 break;
                             }
