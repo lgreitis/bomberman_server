@@ -7,6 +7,7 @@ using GameServices.Interfaces;
 using GameServices.Mediator;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
+using GameServices.Models.MapModels.MapProps;
 using GameServices.Models.PlayerModels;
 
 namespace GameServices.Models.ManagerModels
@@ -219,6 +220,14 @@ namespace GameServices.Models.ManagerModels
                 }
 
                 return Chatroom.Retrieve(participant, allMessages);
+            }
+        }
+
+        public void AddProp(IMapProp newProp)
+        {
+            lock (Lock)
+            {
+                Map.AddProp(newProp);
             }
         }
     }

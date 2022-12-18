@@ -147,5 +147,10 @@ namespace GameServices.Facade
         {
             return MapPlayerSubsystem.GetChatParticipantByUsername(username);
         }
+
+        public void AddProp(IMapProp newProp)
+        {
+            MapPropSubsystem.AddProp(newProp);
+        }
     }
 }

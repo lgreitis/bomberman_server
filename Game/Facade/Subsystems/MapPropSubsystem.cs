@@ -50,5 +50,10 @@ namespace GameServices.Facade.Subsystems
             player.SetBomb(newBomb);
             player.Client.ChatParticipant.Send("found upgraded bomb");
         }
+
+        public void AddProp(IMapProp newProp)
+        {
+            MapProps.Add(newProp);
+        }
     }
 }
