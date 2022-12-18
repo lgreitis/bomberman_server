@@ -8,6 +8,8 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 using GameServices.Singleton;
 using GameServices.Command;
+using GameServices.Models.ManagerModels;
+using GameServices.Interpreter;
 
 namespace GameServer.Behaviours
 {
@@ -29,6 +31,9 @@ namespace GameServer.Behaviours
 
                 try
                 {
+                    GameManager? gameData = null;
+                    bool allMessages = false;
+
                     switch (requestCommand.CommandId)
                     {
                         case WebSocketCommandId.Connect:
@@ -54,29 +59,31 @@ namespace GameServer.Behaviours
                                     user.LoginToken ?? string.Empty,
                                     ID);
 
-                                var gameManager = GamesManager.Instance.GetGameManager(ID);
+                                gameData = GamesManager.Instance.GetGameManager(ID);
 
                                 Send(new WebSocketResponse
                                 {
                                     ResponseId = WebSocketResponseId.Map,
                                     Data = new MapResponse
                                     {
-                                        Map = gameManager.GetMapTiles()
+                                        Map = gameData.GetMapTiles()
                                     }
                                 });
 
-                                Broadcast(gameManager.GetSessionIds(), new WebSocketResponse
+                                Broadcast(gameData.GetSessionIds(), new WebSocketResponse
                                 {
                                     ResponseId = WebSocketResponseId.Players,
-                                    Data = gameManager.GetPlayers()
+                                    Data = gameData.GetPlayers()
                                 });
+
+                                allMessages = true;
 
                                 break;
                             }
                         case WebSocketCommandId.Move:
                             {
                                 var requestData = GetRequestData<MoveRequest>(e.Data);
-                                var gameData = GamesManager.Instance.GetGameManager(ID);
+                                gameData = GamesManager.Instance.GetGameManager(ID);
 
                                 var moveX = requestData.PositiveX != requestData.NegativeX;
                                 var moveY = requestData.PositiveY != requestData.NegativeY;
@@ -105,7 +112,7 @@ namespace GameServer.Behaviours
                         case WebSocketCommandId.UseBomb:
                         case WebSocketCommandId.UndoBomb:
                             {
-                                var gameData = GamesManager.Instance.GetGameManager(ID);
+                                gameData = GamesManager.Instance.GetGameManager(ID);
 
                                 var command = new UseBombCommand(gameData.GetPlayer(ID));
 
@@ -117,6 +124,8 @@ namespace GameServer.Behaviours
                                 {
                                     gameData.RevokeCommand(command);
                                 }
+
+                                // zemiau privalo buti visi broadcastai kaip ir executecommand requeste
 
                                 Broadcast(gameData.GetSessionIds(), new WebSocketResponse
                                 {
@@ -141,6 +150,82 @@ namespace GameServer.Behaviours
 
                                 break;
                             }
+                        case WebSocketCommandId.ExecuteCommand:
+                            {
+                                gameData = GamesManager.Instance.GetGameManager(ID);
+                                var requestData = GetRequestData<ExecuteCommandRequest>(e.Data);
+
+                                var context = new Context(gameData, ID, requestData.CommandText);
+                                var expressions = new List<Expression>
+                                {
+                                    new CommandExpression(),
+                                    new ArgumentExpression()
+                                };
+
+                                foreach (var exp in expressions)
+                                {
+                                    exp.Interpret(context);
+                                }
+
+                                if (!context.IsResponseHidden)
+                                {
+                                    if (context.IsSuccessful)
+                                    {
+                                        gameData.Log("Command executed successfully", ID);
+                                    }
+                                    else
+                                    {
+                                        gameData.Log("Command execution failed", ID);
+                                    }
+                                }
+
+                                // Zemiau privalo buti visi broadcastai kaip ir usecommand requeste
+
+                                Broadcast(gameData.GetSessionIds(), new WebSocketResponse
+                                {
+                                    ResponseId = WebSocketResponseId.TextureUpdate,
+                                    Data = gameData.GetTextures()
+                                });
+
+                                Broadcast(gameData.GetSessionIds(), new WebSocketResponse
+                                {
+                                    ResponseId = WebSocketResponseId.Players,
+                                    Data = gameData.GetPlayers()
+                                });
+
+                                Broadcast(gameData.GetSessionIds(), new WebSocketResponse
+                                {
+                                    ResponseId = WebSocketResponseId.Map,
+                                    Data = new MapResponse
+                                    {
+                                        Map = gameData.GetMapTiles()
+                                    }
+                                });
+
+                                break;
+                            }
+                    }
+
+                    if (gameData != null)
+                    {
+                        var sessionIds = gameData.GetSessionIds();
+
+                        foreach (var sessionId in sessionIds)
+                        {
+                            var messages = gameData.GetSessionMessages(sessionId, allMessages && sessionId == ID);
+
+                            if (!messages.Any())
+                            {
+                                continue;
+                            }
+
+                            var json = JsonConvert.SerializeObject(new WebSocketResponse
+                            {
+                                ResponseId = WebSocketResponseId.MessagesUpdate,
+                                Data = messages
+                            });
+                            Sessions.SendTo(json, sessionId);
+                        }
                     }
                 }
                 catch (Exception ex)

@@ -1,5 +1,6 @@
 ﻿using GameServices.Facade.Subsystems;
 using GameServices.Interfaces;
+using GameServices.Mediator;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
 using GameServices.Models.PlayerModels;
@@ -67,9 +68,9 @@ namespace GameServices.Facade
             return MapTileSubsystem.DoMapTilesExists();
         }
 
-        public void RegisterClient(Client client)
+        public void RegisterClient(Client client, Chatroom chatroom)
         {
-            MapPlayerSubsystem.RegisterClient(client);
+            MapPlayerSubsystem.RegisterClient(client, chatroom);
         }
 
         public List<string> GetClientSessionIds()
@@ -135,6 +136,16 @@ namespace GameServices.Facade
                 MapTextureSubsystem.GetBombExplosionTemplate(),
                 MapTileSubsystem.GetBombExplosionTemplate()
             };
+        }
+
+        public Participant? GetChatParticipant(string sessionId)
+        {
+            return MapPlayerSubsystem.GetChatParticipant(sessionId);
+        }
+
+        public Participant? GetChatParticipantByUsername(string username)
+        {
+            return MapPlayerSubsystem.GetChatParticipantByUsername(username);
         }
     }
 }

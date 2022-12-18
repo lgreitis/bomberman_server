@@ -1,4 +1,5 @@
 ﻿using GameServices.Enums;
+using GameServices.Mediator;
 using GameServices.Models.CommonModels;
 using GameServices.Models.Containers;
 using GameServices.Models.MapModels;
@@ -22,7 +23,7 @@ namespace GameServices.Facade.Subsystems
             _container.Players = mapPlayers;
         }
 
-        public void RegisterClient(Client client)
+        public void RegisterClient(Client client, Chatroom chatroom)
         {
             var registeredClient = _container.Players.FirstOrDefault(x =>
                     x.Client != null
@@ -31,11 +32,14 @@ namespace GameServices.Facade.Subsystems
             if (registeredClient == null)
             {
                 _container.Players.First(x => x.Client == null).Client = client;
+                client.ChatParticipant = new GameRoomClient(chatroom, $"{client.Username} (ID:{client.UserId})");
+                client.ChatParticipant.Send("joined the game");
 
                 return;
             }
 
             registeredClient.Client.SessionId = client.SessionId;
+            registeredClient.Client.ChatParticipant.Send("reconnected");
         }
 
         public List<string> GetClientSessionIds()
@@ -117,6 +121,30 @@ namespace GameServices.Facade.Subsystems
                 _container.Players.Remove(affectedPlayer);
                 _container.Players.Add(newPlayer);
             }
+        }
+
+        public Participant? GetChatParticipant(string sessionId)
+        {
+            var participant = _container.Players.FirstOrDefault(x => x.Client != null && x.Client.SessionId == sessionId);
+
+            if (participant == null)
+            {
+                return null;
+            }
+
+            return participant.Client.ChatParticipant;
+        }
+
+        public Participant? GetChatParticipantByUsername(string username)
+        {
+            var participant = _container.Players.FirstOrDefault(x => x.Client != null && x.Client.Username == username);
+
+            if (participant == null)
+            {
+                return null;
+            }
+
+            return participant.Client.ChatParticipant;
         }
     }
 }

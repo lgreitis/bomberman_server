@@ -69,6 +69,7 @@ namespace GameServices.Models.MapModels
             if (SavedBombState != null)
             {
                 Bomb = (IBomb)SavedBombState.DeepCopy();
+                Client.ChatParticipant.Send("picked placed bomb");
             }
 
             RemoveBombState();

@@ -1,4 +1,6 @@
-﻿namespace GameServices.Models.PlayerModels
+﻿using GameServices.Mediator;
+
+namespace GameServices.Models.PlayerModels
 {
     public class Client
     {
@@ -7,5 +9,6 @@
         public string Token { get; set; } = string.Empty;
         public bool IsConnected { get; set; }
         public string SessionId { get; set; } = string.Empty;
+        public Participant? ChatParticipant { get; set; }
     }
 }

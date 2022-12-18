@@ -4,6 +4,7 @@ using GameServices.Enums;
 using GameServices.Facade;
 using GameServices.Factories.MapFactory;
 using GameServices.Interfaces;
+using GameServices.Mediator;
 using GameServices.Models.CommonModels;
 using GameServices.Models.MapModels;
 using GameServices.Models.PlayerModels;
@@ -16,11 +17,15 @@ namespace GameServices.Models.ManagerModels
         public int LobbyId { get; private set; }
         public MapFacade? Map { get; private set; }
         public Level Level { get; private set; }
+        public Chatroom Chatroom { get; private set; }
+        public Participant Logger { get; private set; }
 
         public GameManager(int lobbyId)
         {
             LobbyId = lobbyId;
             Level = Level.First;
+            Chatroom = new GameRoomConsole();
+            Logger = new GameRoomServer(Chatroom);
 
             InitializeLevel();
         }
@@ -38,12 +43,15 @@ namespace GameServices.Models.ManagerModels
             {
                 case Level.First:
                     Level = Level.Second;
+                    Logger.Send("Level 1 has started.");
                     break;
                 case Level.Second:
                     Level = Level.Third;
+                    Logger.Send("Level 2 has started.");
                     break;
                 case Level.Third:
                     Level = Level.First;
+                    Logger.Send("Level 3 has started.");
                     break;
             }
         }
@@ -52,7 +60,7 @@ namespace GameServices.Models.ManagerModels
         {
             lock (Lock)
             {
-                Map.RegisterClient(client);
+                Map.RegisterClient(client, this.Chatroom);
             }
         }
 
@@ -149,6 +157,68 @@ namespace GameServices.Models.ManagerModels
             lock (Lock)
             {
                 Map.PickProp(player);
+            }
+        }
+
+        public void Log(string message, string sessionId)
+        {
+            lock (Lock)
+            {
+                var participant = Map.GetChatParticipant(sessionId);
+
+                if (participant == null)
+                {
+                    return;
+                }
+
+                Logger.Send(message, participant);
+            }
+        }
+
+        public void Log(string message, Participant recipient)
+        {
+            lock (Lock)
+            {
+                Logger.Send(message, recipient);
+            }
+        }
+
+        public void Log(string message)
+        {
+            lock (Lock)
+            {
+                Logger.Send(message);
+            }
+        }
+
+        public Participant? GetChatParticipant(string sessionId)
+        {
+            lock (Lock)
+            {
+                return Map.GetChatParticipant(sessionId);
+            }
+        }
+
+        public Participant? GetChatParticipantByUsername(string username)
+        {
+            lock (Lock)
+            {
+                return Map.GetChatParticipantByUsername(username);
+            }
+        }
+
+        public List<string> GetSessionMessages(string sessionId, bool allMessages)
+        {
+            lock (Lock)
+            {
+                var participant = GetChatParticipant(sessionId);
+
+                if (participant == null)
+                {
+                    return new List<string>();
+                }
+
+                return Chatroom.Retrieve(participant, allMessages);
             }
         }
     }

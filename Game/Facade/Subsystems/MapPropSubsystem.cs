@@ -48,6 +48,7 @@ namespace GameServices.Facade.Subsystems
             prop.IsTaken = true;
             player.HasProp = true;
             player.SetBomb(newBomb);
+            player.Client.ChatParticipant.Send("found upgraded bomb");
         }
     }
 }

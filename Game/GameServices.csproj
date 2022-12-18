@@ -21,6 +21,8 @@
     <None Remove="Iterator\" />
     <None Remove="Flyweight\" />
     <None Remove="Flyweight\MapTileFlyweights\" />
+    <None Remove="Mediator\" />
+    <None Remove="Interpreter\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ChainOfResponsibility\" />
@@ -29,5 +31,7 @@
     <Folder Include="Iterator\" />
     <Folder Include="Flyweight\" />
     <Folder Include="Flyweight\MapTileFlyweights\" />
+    <Folder Include="Mediator\" />
+    <Folder Include="Interpreter\" />
   </ItemGroup>
 </Project>

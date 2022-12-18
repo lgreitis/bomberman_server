@@ -46,14 +46,17 @@ namespace GameServices.Models.Containers
                 else if (affectedPlayer is BleedingPlayer)
                 {
                     newPlayer = new InjuredPlayer(affectedPlayer);
+                    newPlayer.Client.ChatParticipant.Send("got injured");
                 }
                 else if (affectedPlayer is InjuredPlayer)
                 {
                     newPlayer = new DeadPlayer(affectedPlayer);
+                    newPlayer.Client.ChatParticipant.Send("died");
                 }
                 else
                 {
                     newPlayer = new BleedingPlayer(affectedPlayer);
+                    newPlayer.Client.ChatParticipant.Send("got bleeding");
                 }
 
                 Players.Remove(affectedPlayer);
